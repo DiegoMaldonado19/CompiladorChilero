@@ -40,13 +40,13 @@ _anios = 2023 - mivar;_
 
 _si (anios >= 18){_
 
-    _Escribir("Usted es mayor de edad");_
+    Escribir("Usted es mayor de edad");
 
 _}_
 
 _sino{_
 
-    _Escribir("Usted es menor de edad");_
+    Escribir("Usted es menor de edad");
 
 _}_
 
