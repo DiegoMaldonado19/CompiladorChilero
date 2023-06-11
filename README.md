@@ -29,7 +29,9 @@ _El Lenguaje cuenta con las siguientes instrucciones:_
 ## Ejemplo de codigo:
 
 _entero mivar;_
+
 _Escribir("Bienvenido, ingrese su año de nacimiento");_
+
 _Leer(mivar);_
 
 _entero anios;_
@@ -37,10 +39,15 @@ _entero anios;_
 _anios = 2023 - mivar;_
 
 _si (anios >= 18){_
+
     _ Escribir("Usted es mayor de edad");_
+
 _}_
+
 _sino{_
+
     _ Escribir("Usted es menor de edad");_
+
 _}_
 
 ## Autor ✒️
