@@ -82,6 +82,14 @@ non terminal Object value; /* Manejo de Valores */
 non terminal elements; /* para poder utilizar dentro de ifs */
 non terminal elements_list;
 
+/*non terminal file;
+non terminal instructions_list;
+non terminal instruccion;
+non terminal numerical_expresion;
+non terminal string_expression;
+non terminal logical_expression;
+*/
+
 /* Declaracion de precedencia */
 precedence left PLUS, MINUS;
 precedence left DIV, MULT;
@@ -97,7 +105,7 @@ elements_list ::=       elements                        {: :}
                 |       elements_list elements          {: :}
                 ;
 
-elements ::=    var_creation:t              {: :}
+elements ::=    var_creation              {: :}
         |       instr                       {: :}
         |       assing                      {: :}
         |       condition                   {: :}
@@ -189,3 +197,43 @@ logical_expr ::=    value:e1 EQUALS EQUALS value:e2                  {:
                                                                      :}
                 |   EXCLAMATION value:e1                             {:  :}
                 ;  
+
+/*
+file ::=        instructions_list
+        ;
+
+instructions_list ::=   instructions_list Instrucciones
+                    |   instruccion
+                    ;
+
+instruccion ::=  WRITE LPAREN string_expression RPAREN SEMICOLON
+              |  READ LPAREN IDENTIFIER RPAREN SEMICOLON
+              |  INT IDENTIFIER SEMICOLON
+              |  STRING IDENTIFIER SEMICOLON
+              |  FLOAT IDENTIFIER SEMICOLON
+              |  IDENTIFIER EQUALS string_expression SEMICOLON
+              |  IF LPAREN logical_expression RPAREN LBRACE instructions_list RBRACE
+              |  IF LPAREN logical_expression RPAREN LBRACE instructions_list RBRACE ELSE LBRACE instructions_list RBRACE
+              |  error
+              ;
+
+numerical_expresion ::=    numerical_expresion:e1 PLUS numerical_expresion:e2                                  {: RESULT = e1.intValue() + e2.intValue(); :}
+                |          numerical_expresion:e1 MINUS  numerical_expresion:e2                                 {: RESULT = e1.intValue() - e2.intValue(); :}
+                |          numerical_expresion:e1 MULT  numerical_expresion:e2                                  {: RESULT = e1.intValue() * e2.intValue(); :}
+                |          numerical_expresion:e1 DIV  numerical_expresion:e2                                   {: RESULT = e1.intValue() / e2.intValue(); :}
+                |          MINUS  numerical_expresion:e1                                         {: RESULT = -e1.intValue(); :}
+                |          LPAREN  numerical_expresion:e1 RPAREN                                 {: RESULT = e1.intValue(); :} 
+                |          INT_CONST:e1                                          {: RESULT = Integer.valueOf(e1.getLexeme()); :}         
+                ;
+
+string_expression ::=    STR_CONST
+                    |    FLOAT_CONST    
+                    |    numerical_expresion
+                    ;
+
+logical_expression ::=  numerical_expresion EQUALS EQUALS numerical_expresion
+                     |  numerical_expresion LT numerical_expresion 
+                     |  numerical_expresion GT numerical_expresion
+                     |  string_expression EQUALS EQUALS string_expression
+                     ;        
+*/
