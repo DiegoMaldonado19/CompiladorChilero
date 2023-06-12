@@ -11,4 +11,11 @@
         <maven.compiler.target>17</maven.compiler.target>
         <exec.mainClass>com.compiladorchilero.CompiladorChilero</exec.mainClass>
     </properties>
+    <dependencies>
+        <dependency>
+            <groupId>com.github.vbmacher</groupId>
+            <artifactId>java-cup-runtime</artifactId>
+            <version>11b-20160615-1</version>
+        </dependency>
+    </dependencies>
 </project>

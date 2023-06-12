@@ -1,1 +1,191 @@
+/* Paquete donde se guardará la clase */
+package com.compiladorchilero.analyzers;
 
+/* Imports necesarios */
+import java.util.*;
+import java_cup.runtime.*;
+import com.compiladorchilero.models.*;
+
+class Parser;
+
+/* Codigo de usuario */
+parser code {:
+    private ArrayList<String> errorList;
+    private ArrayList<Token> tokenList;
+
+        public Parser(Lexer lex){
+            super(lex);
+            this.errorList = new ArrayList();
+            this.tokenList = new ArrayList();
+        }
+
+        public void syntax_error(Token token){
+            errorList.add(String.format(report_error("Se encontro un error con el token: "+token.getLexeme()+" en la linea: "+token.getLine()+" en la columna: "+token.getColumn())));
+        }
+
+        private String report_error(String s) {
+            return s;
+        }
+
+        public ArrayList<Token> getTokenList(){
+            return tokenList;
+        }
+
+        public ArrayList<String> getErrorList(){
+            return errorList;
+        }
+:}
+
+/* Declaracion de terminales */
+terminal Token LBRACE;
+terminal Token RBRACE;
+terminal Token COLON;
+terminal Token COMMA;
+terminal Token SEMICOLON;
+terminal Token LPAREN;
+terminal Token RPAREN;
+terminal Token EQUALS;
+terminal Token PLUS;
+terminal Token MINUS;
+terminal Token MULT;
+terminal Token DIV;
+terminal Token LT; /*<=*/
+terminal Token GT; /*>=*/
+terminal Token EXCLAMATION;
+terminal Token OR;
+terminal Token INT;
+terminal Token STRING;
+terminal Token FLOAT;
+terminal Token IF;
+terminal Token ELSE;
+terminal Token FOR;
+terminal Token WHILE;
+terminal Token READ;
+terminal Token WRITE;
+terminal Token IDENTIFIER;
+terminal Token INT_CONST;
+terminal Token STR_CONST;
+terminal Token FLOAT_CONST;
+terminal Token ERROR;
+
+/* Declaracion de elementos no terminales */
+non terminal file;
+non terminal condition; /* Manejo de Condiciones */
+non terminal cicle; /* Manejo de Ciclos */
+non terminal Integer expr;  /* Manejo de Expresiones aritmeticas */
+non terminal Boolean logical_expr; /* Manejo de Expresiones logicas */
+non terminal instr; /* Manejo de Instrucciones, Leer - Escribir */
+non terminal assing; /* Manejo de asignaciones */
+non terminal var_creation; /* Manejo de creacion de variables */
+non terminal type; /* Manejo de tipos */
+non terminal Object value; /* Manejo de Valores */
+non terminal elements; /* para poder utilizar dentro de ifs */
+non terminal elements_list;
+
+/* Declaracion de precedencia */
+precedence left PLUS, MINUS;
+precedence left DIV, MULT;
+precedence nonassoc LPAREN, RPAREN;
+
+/* Definimos con que simbolo no terminal inicia */
+start with file;
+
+file ::=   elements_list                   {: :}
+        ;
+
+elements_list ::=       elements                        {: :}
+                |       elements_list elements          {: :}
+                ;
+
+elements ::=    var_creation:t              {: :}
+        |       instr                       {: :}
+        |       assing                      {: :}
+        |       condition                   {: :}
+        |       cicle                       {: :}
+        ;
+
+var_creation ::=    type:t IDENTIFIER:i SEMICOLON       {:
+                                                                tokenList.add(new Token(String.valueOf(t)));
+                                                                tokenList.add(i);
+                                                         :}
+            |       ERROR:e var_creation                    {: syntax_error(e); :}
+            ;
+
+type ::=    INT:a         {: RESULT = String.valueOf(a.getLexeme()); :}
+        |   STRING:a      {: RESULT = String.valueOf(a.getLexeme()); :}
+        |   FLOAT:a       {: RESULT = String.valueOf(a.getLexeme()); :}
+        ;
+
+instr ::=    WRITE:w LPAREN STR_CONST:s RPAREN SEMICOLON        {: 
+                                                                        tokenList.add(w);
+                                                                        tokenList.add(s);
+                                                                :}
+        |    READ:r LPAREN IDENTIFIER:i RPAREN SEMICOLON       {: 
+                                                                        tokenList.add(r);
+                                                                        tokenList.add(i);
+                                                                :}
+        |    ERROR:e instr                                     {: syntax_error(e); :}
+        ;
+
+assing ::= IDENTIFIER:i EQUALS value:v SEMICOLON      {: 
+                                                                tokenList.add(i);
+                                                                tokenList.add(new Token(String.valueOf(v))); 
+                                                      :}
+        |  ERROR:e assing                 {: syntax_error(e); :}
+        ;
+
+condition ::=   IF:i LPAREN logical_expr:lo RPAREN RBRACE elements:e LBRACE                     {: 
+                                                                                                        tokenList.add(i); 
+                                                                                                        tokenList.add(new Token(String.valueOf(lo)));
+                                                                                                        tokenList.add(new Token(String.valueOf(e)));
+                                                                                                :}
+            |   IF:i LPAREN logical_expr:lo RPAREN RBRACE elements:e LBRACE ELSE:e1 RBRACE elements:e2 LBRACE       {: 
+                                                                                                                        tokenList.add(i); 
+                                                                                                                        tokenList.add(new Token(String.valueOf(lo)));
+                                                                                                                        tokenList.add(new Token(String.valueOf(e))); 
+                                                                                                                        tokenList.add(e1);
+                                                                                                                        tokenList.add(new Token(String.valueOf(e2)));
+                                                                                                                    :}
+            |   ERROR:e condition                                                                        {: syntax_error(e); :}
+            ;
+
+cicle ::=   FOR:f LPAREN INT_CONST:d1 COMMA INT_CONST:d2 RPAREN     {: 
+                                                                        tokenList.add(f); 
+                                                                        tokenList.add(d1);
+                                                                        tokenList.add(d2);  
+                                                                    :}
+        |   WHILE:w LPAREN logical_expr:lo RPAREN                   {: 
+                                                                        tokenList.add(w); 
+                                                                        tokenList.add(new Token(String.valueOf(lo))); 
+                                                                    :}
+        |   ERROR:e cicle                             {: syntax_error(e);  :}
+        ;
+
+value ::=   STR_CONST:e    {: RESULT = String.valueOf(e.getLexeme()); :}
+        |   FLOAT_CONST:e     {: RESULT = Float.valueOf(e.getLexeme()); :}
+        |   expr:e            {: RESULT = e; :}
+        ;
+
+expr ::=    expr:e1 PLUS expr:e2                                  {: RESULT = e1.intValue() + e2.intValue(); :}
+        |   expr:e1 MINUS expr:e2                                 {: RESULT = e1.intValue() - e2.intValue(); :}
+        |   expr:e1 MULT expr:e2                                  {: RESULT = e1.intValue() * e2.intValue(); :}
+        |   expr:e1 DIV expr:e2                                   {: RESULT = e1.intValue() / e2.intValue(); :}
+        |   MINUS expr:e1                                         {: RESULT = -e1.intValue(); :}
+        |   LPAREN expr:e1 RPAREN                                 {: RESULT = e1.intValue(); :} 
+        |   INT_CONST:e1                                          {: RESULT = Integer.valueOf(e1.getLexeme()); :}         
+        ;
+
+logical_expr ::=    value:e1 EQUALS EQUALS value:e2                  {:  
+                                                                        Object s = e1;
+                                                                        Object s2 = e2;
+
+                                                                        RESULT = s.equals(s2);
+                                                                     :}
+                |   value:e1 LT value:e2                             {:  
+                                                                        RESULT = Integer.valueOf(String.valueOf(e1)) <= Integer.valueOf(String.valueOf(e2));
+                                                                     :}
+                |   value:e1 GT value:e2                             {: 
+                                                                        RESULT = Integer.valueOf(String.valueOf(e1)) >= Integer.valueOf(String.valueOf(e2));
+                                                                     :}
+                |   EXCLAMATION value:e1                             {:  :}
+                ;  
