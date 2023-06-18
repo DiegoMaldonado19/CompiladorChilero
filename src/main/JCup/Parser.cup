@@ -112,6 +112,8 @@ instruction ::=  WRITE LPAREN string_expression:a RPAREN SEMICOLON              
               |  IF LPAREN logical_expression:a RPAREN LBRACE instructions_list:b RBRACE else_ifs:c ELSE RBRACE instructions_list:d LBRACE  {: RESULT = new If(a,b,c,d); :}
               |  IDENTIFIER INCREMENT SEMICOLON                                                                                             {: RESULT = new Increment(a.getLexeme()); :}
               |  IDENTIFIER DECREMENT SEMICOLON                                                                                             {: RESULT = new Decrement(a.getLexeme()); :}
+              |  WHILE LPAREN logical_expression:a RPAREN LBRACE instructions_list:b RBRACE                                                 {: RESULT = new While(a, b); :}
+              |  FOR LPAREN INT_CONST:a COMMA INT_CONST:b RPAREN LBRACE instructions_list:c RBRACE                                          {: RESULT = new For(a, b, c); :}                
               |  SWITCH LPAREN IDENTIFIER:a RPPAREN LBRACE case_list:b RBRACE                                                               {: RESULT = new Switch(a, b); :}
               |  error
               ;
@@ -131,15 +133,15 @@ numerical_expresion ::=    numerical_expresion:a PLUS numerical_expresion:b     
                 |          numerical_expresion:a MINUS  numerical_expresion:b                      {: RESULT = new Operation(a, b, Operation.OperationType.SUBSTRACTION); :}
                 |          numerical_expresion:a MULT  numerical_expresion:b                       {: RESULT = new Operation(a, b, Operation.OperationType.MULTIPLICATION); :}
                 |          numerical_expresion:a DIV  numerical_expresion:b                        {: RESULT = new Operation(a, b, Operation.OperationType.DIVISION); :}
-                |          MINUS  numerical_expresion:a                                            {: RESULT = new Operation(a, Operation.OperationType.NEGATVE); :}%prec UMINUS
+                |          MINUS  numerical_expresion:a                                            {: RESULT = new Operation(a, Operation.OperationType.NEGATIVE); :}%prec UMINUS
                 |          LPAREN  numerical_expresion:a RPAREN                                    {: RESULT = a; :} 
                 |          INT_CONST:a                                                             {: RESULT = new Operation(new Double(a)); :}
                 |          FLOAT_CONST:a                                                           {: RESULT = new Operation(new Double(a)); :}
-                |          CHARACTER_CONST:a                                                       {: RESULT = new Operation(a, Operation.OperationType.CHARACTER); :}
-                |          IDENTIFIER:a                                                            {: RESULT = new Operation(a, Operation.OperationType.IDENTIFIER); :}
+                |          CHARACTER_CONST:a                                                       {: RESULT = new Operation(a.getLexeme(), Operation.OperationType.CHARACTER); :}
+                |          IDENTIFIER:a                                                            {: RESULT = new Operation(a.getLexeme(), Operation.OperationType.IDENTIFIER); :}
                 ;
 
-string_expression ::=   STR_CONST:a                   {: RESULT = new Operation(a, Operation.OperationType.STRING); :}
+string_expression ::=   STR_CONST:a                   {: RESULT = new Operation(a.getLexeme(), Operation.OperationType.STRING); :}
                     |   numerical_expresion:a         {: RESULT = a; :}
                     ;
                     

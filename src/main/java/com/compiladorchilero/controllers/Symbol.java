@@ -14,7 +14,7 @@ public class Symbol {
     private final String id;
     private Object value;
 
-    public Symbol(Type type, String id) {
+    public Symbol(String id, Type type) {
         this.type = type;
         this.id = id;
     }
