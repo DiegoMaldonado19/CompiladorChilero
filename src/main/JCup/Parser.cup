@@ -10,30 +10,28 @@ class Parser;
 
 /* Codigo de usuario */
 parser code {:
-    private ArrayList<String> errorList;
-    private ArrayList<Token> tokenList;
+    private LinkedList<Instruction> AST;
+    private LinkedList<String> errorList;
 
-        public Parser(Lexer lex){
-            super(lex);
-            this.errorList = new ArrayList();
-            this.tokenList = new ArrayList();
-        }
+    public Parser(Lexer lex){
+        super(lex);
+        this.AST = new LinkedList<Instruction>();
+        this.errorList = new LinkedList<String>();
+    }
 
-        public void syntax_error(Token token){
-            errorList.add(String.format(report_error("Se encontro un error con el token: "+token.getLexeme()+" en la linea: "+token.getLine()+" en la columna: "+token.getColumn())));
-        }
+     * Método al que se llama automáticamente ante algún error sintactico.
+     **/ 
+    public void syntax_error(Token token){ 
+        errorList.add(String.format(report_error("Se encontro un error sintactico con el token: "+token.getLexeme()+" en la linea: "+token.getLine()+" en la columna: "+token.getColumn())));
+    } 
 
-        private String report_error(String s) {
-            return s;
-        }
+    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{ 
+        errorList.add(String.format(report_error("Error síntactico irrecuperable con el token: "+token.getLexeme()+" en la linea: "+token.getLine()+" en la columna: "+token.getColumn()))); 
+    }  
 
-        public ArrayList<Token> getTokenList(){
-            return tokenList;
-        }
-
-        public ArrayList<String> getErrorList(){
-            return errorList;
-        }
+    public LinkedList<Instruction> getAST() {
+        return AST;
+    }
 :}
 
 /* Declaracion de terminales */
@@ -66,174 +64,93 @@ terminal Token IDENTIFIER;
 terminal Token INT_CONST;
 terminal Token STR_CONST;
 terminal Token FLOAT_CONST;
-terminal Token ERROR;
+terminal Token INCREMENT;
+terminal Token DECREMENT;
+terminal Token CHARACTER;
+terminal Token CHARACTER_CONST;
+terminal Token UMENOS;
 
 /* Declaracion de elementos no terminales */
 non terminal file;
-non terminal condition; /* Manejo de Condiciones */
-non terminal cicle; /* Manejo de Ciclos */
-non terminal Integer expr;  /* Manejo de Expresiones aritmeticas */
-non terminal Boolean logical_expr; /* Manejo de Expresiones logicas */
-non terminal instr; /* Manejo de Instrucciones, Leer - Escribir */
-non terminal assing; /* Manejo de asignaciones */
-non terminal var_creation; /* Manejo de creacion de variables */
-non terminal type; /* Manejo de tipos */
-non terminal Object value; /* Manejo de Valores */
-non terminal elements; /* para poder utilizar dentro de ifs */
-non terminal elements_list;
-
-/*non terminal file;
-non terminal instructions_list;
-non terminal instruccion;
-non terminal numerical_expresion;
-non terminal string_expression;
-non terminal logical_expression;
-*/
+non terminal LinkedList<Instruction> instructions_list;
+non terminal Instruction instruction;
+non terminal LinkedList<Instruction> else_ifs;
+non terminal LinkedList<Instruction> case_list;
+non terminal Instruction case_statement;
+non terminal Operation numerical_expresion;
+non terminal Operation string_expression;
+non terminal Operation logical_expression;
+non terminal Operation expressions;
 
 /* Declaracion de precedencia */
 precedence left PLUS, MINUS;
 precedence left DIV, MULT;
+precedence right UMENOS;
 precedence nonassoc LPAREN, RPAREN;
+precedence nonassoc INCREMENTO,DECREMENTO; 
 
 /* Definimos con que simbolo no terminal inicia */
 start with file;
 
-file ::=   elements_list                   {: :}
+file ::=  instructions_list:a
         ;
 
-elements_list ::=       elements                        {: :}
-                |       elements_list elements          {: :}
-                ;
-
-elements ::=    var_creation              {: :}
-        |       instr                       {: :}
-        |       assing                      {: :}
-        |       condition                   {: :}
-        |       cicle                       {: :}
-        ;
-
-var_creation ::=    type:t IDENTIFIER:i SEMICOLON       {:
-                                                                tokenList.add(new Token(String.valueOf(t)));
-                                                                tokenList.add(i);
-                                                         :}
-            |       ERROR:e var_creation                    {: syntax_error(e); :}
-            ;
-
-type ::=    INT:a         {: RESULT = String.valueOf(a.getLexeme()); :}
-        |   STRING:a      {: RESULT = String.valueOf(a.getLexeme()); :}
-        |   FLOAT:a       {: RESULT = String.valueOf(a.getLexeme()); :}
-        ;
-
-instr ::=    WRITE:w LPAREN STR_CONST:s RPAREN SEMICOLON        {: 
-                                                                        tokenList.add(w);
-                                                                        tokenList.add(s);
-                                                                :}
-        |    READ:r LPAREN IDENTIFIER:i RPAREN SEMICOLON       {: 
-                                                                        tokenList.add(r);
-                                                                        tokenList.add(i);
-                                                                :}
-        |    ERROR:e instr                                     {: syntax_error(e); :}
-        ;
-
-assing ::= IDENTIFIER:i EQUALS value:v SEMICOLON      {: 
-                                                                tokenList.add(i);
-                                                                tokenList.add(new Token(String.valueOf(v))); 
-                                                      :}
-        |  ERROR:e assing                 {: syntax_error(e); :}
-        ;
-
-condition ::=   IF:i LPAREN logical_expr:lo RPAREN RBRACE elements:e LBRACE                     {: 
-                                                                                                        tokenList.add(i); 
-                                                                                                        tokenList.add(new Token(String.valueOf(lo)));
-                                                                                                        tokenList.add(new Token(String.valueOf(e)));
-                                                                                                :}
-            |   IF:i LPAREN logical_expr:lo RPAREN RBRACE elements:e LBRACE ELSE:e1 RBRACE elements:e2 LBRACE       {: 
-                                                                                                                        tokenList.add(i); 
-                                                                                                                        tokenList.add(new Token(String.valueOf(lo)));
-                                                                                                                        tokenList.add(new Token(String.valueOf(e))); 
-                                                                                                                        tokenList.add(e1);
-                                                                                                                        tokenList.add(new Token(String.valueOf(e2)));
-                                                                                                                    :}
-            |   ERROR:e condition                                                                        {: syntax_error(e); :}
-            ;
-
-cicle ::=   FOR:f LPAREN INT_CONST:d1 COMMA INT_CONST:d2 RPAREN     {: 
-                                                                        tokenList.add(f); 
-                                                                        tokenList.add(d1);
-                                                                        tokenList.add(d2);  
-                                                                    :}
-        |   WHILE:w LPAREN logical_expr:lo RPAREN                   {: 
-                                                                        tokenList.add(w); 
-                                                                        tokenList.add(new Token(String.valueOf(lo))); 
-                                                                    :}
-        |   ERROR:e cicle                             {: syntax_error(e);  :}
-        ;
-
-value ::=   STR_CONST:e    {: RESULT = String.valueOf(e.getLexeme()); :}
-        |   FLOAT_CONST:e     {: RESULT = Float.valueOf(e.getLexeme()); :}
-        |   expr:e            {: RESULT = e; :}
-        ;
-
-expr ::=    expr:e1 PLUS expr:e2                                  {: RESULT = e1.intValue() + e2.intValue(); :}
-        |   expr:e1 MINUS expr:e2                                 {: RESULT = e1.intValue() - e2.intValue(); :}
-        |   expr:e1 MULT expr:e2                                  {: RESULT = e1.intValue() * e2.intValue(); :}
-        |   expr:e1 DIV expr:e2                                   {: RESULT = e1.intValue() / e2.intValue(); :}
-        |   MINUS expr:e1                                         {: RESULT = -e1.intValue(); :}
-        |   LPAREN expr:e1 RPAREN                                 {: RESULT = e1.intValue(); :} 
-        |   INT_CONST:e1                                          {: RESULT = Integer.valueOf(e1.getLexeme()); :}         
-        ;
-
-logical_expr ::=    value:e1 EQUALS EQUALS value:e2                  {:  
-                                                                        Object s = e1;
-                                                                        Object s2 = e2;
-
-                                                                        RESULT = s.equals(s2);
-                                                                     :}
-                |   value:e1 LT value:e2                             {:  
-                                                                        RESULT = Integer.valueOf(String.valueOf(e1)) <= Integer.valueOf(String.valueOf(e2));
-                                                                     :}
-                |   value:e1 GT value:e2                             {: 
-                                                                        RESULT = Integer.valueOf(String.valueOf(e1)) >= Integer.valueOf(String.valueOf(e2));
-                                                                     :}
-                |   EXCLAMATION value:e1                             {:  :}
-                ;  
-
-/*
-file ::=        instructions_list
-        ;
-
-instructions_list ::=   instructions_list Instrucciones
-                    |   instruccion
+instructions_list ::=   instructions_list:a instruction:b   {: RESULT = a; RESULT.add(b); :}
+                    |   instruction:a                       {: RESULT = new LinkedList<>(); RESULT.add(a); :}
                     ;
 
-instruccion ::=  WRITE LPAREN string_expression RPAREN SEMICOLON
-              |  READ LPAREN IDENTIFIER RPAREN SEMICOLON
-              |  INT IDENTIFIER SEMICOLON
-              |  STRING IDENTIFIER SEMICOLON
-              |  FLOAT IDENTIFIER SEMICOLON
-              |  IDENTIFIER EQUALS string_expression SEMICOLON
-              |  IF LPAREN logical_expression RPAREN LBRACE instructions_list RBRACE
-              |  IF LPAREN logical_expression RPAREN LBRACE instructions_list RBRACE ELSE LBRACE instructions_list RBRACE
+instruction ::=  WRITE LPAREN string_expression:a RPAREN SEMICOLON                                                                          {: RESULT = new Print(a); :}
+              |  READ LPAREN IDENTIFIER:a RPAREN SEMICOLON                                                                                  {: RESULT = new Read(a.getLexeme); :}
+              |  INT IDENTIFIER:a SEMICOLON                                                                                                 {: RESULT = new Declaration(a.getLexeme(), Type.NUMBER); :}
+              |  STRING IDENTIFIER:a SEMICOLON                                                                                              {: RESULT = new Declaration(a.getLexeme(), Type.STRING); :}
+              |  FLOAT IDENTIFIER:a SEMICOLON                                                                                               {: RESULT = new Declaration(a.getLexeme(), Type.FLOAT); :}
+              |  CHARACTER IDENTIFIER:a SEMICOLON                                                                                           {: RESULT = new Declaration(a.getLexeme(), Type.CHARACTER); :}
+              |  IDENTIFIER:a EQUALS expression:b SEMICOLON                                                                                 {: RESULT = new Assignment(a.getLexeme(), b); :}
+              |  IF LPAREN logical_expression:a RPAREN LBRACE instructions_list:b RBRACE                                                    {: RESULT = new If(a,b); :}
+              |  IF LPAREN logical_expression:a RPAREN LBRACE instructions_list:b RBRACE ELSE LBRACE instructions_list:c RBRACE             {: RESULT = new If(a,b,c); :}
+              |  IF LPAREN logical_expression:a RPAREN LBRACE instructions_list:b RBRACE else_ifs:c                                         {: RESULT = new If(a,b,c,null); :}
+              |  IF LPAREN logical_expression:a RPAREN LBRACE instructions_list:b RBRACE else_ifs:c ELSE RBRACE instructions_list:d LBRACE  {: RESULT = new If(a,b,c,d); :}
+              |  IDENTIFIER INCREMENT SEMICOLON                                                                                             {: RESULT = new Increment(a.getLexeme()); :}
+              |  IDENTIFIER DECREMENT SEMICOLON                                                                                             {: RESULT = new Decrement(a.getLexeme()); :}
+              |  SWITCH LPAREN IDENTIFIER:a RPPAREN LBRACE case_list:b RBRACE                                                               {: RESULT = new Switch(a, b); :}
               |  error
               ;
 
-numerical_expresion ::=    numerical_expresion:e1 PLUS numerical_expresion:e2                                  {: RESULT = e1.intValue() + e2.intValue(); :}
-                |          numerical_expresion:e1 MINUS  numerical_expresion:e2                                 {: RESULT = e1.intValue() - e2.intValue(); :}
-                |          numerical_expresion:e1 MULT  numerical_expresion:e2                                  {: RESULT = e1.intValue() * e2.intValue(); :}
-                |          numerical_expresion:e1 DIV  numerical_expresion:e2                                   {: RESULT = e1.intValue() / e2.intValue(); :}
-                |          MINUS  numerical_expresion:e1                                         {: RESULT = -e1.intValue(); :}
-                |          LPAREN  numerical_expresion:e1 RPAREN                                 {: RESULT = e1.intValue(); :} 
-                |          INT_CONST:e1                                          {: RESULT = Integer.valueOf(e1.getLexeme()); :}         
+else_ifs ::= else_ifs:a ELSE LPAREN logical_expression:b RPAREN LBRACE instructions_list:c RBRACE       {: RESULT = a; RESULT.add(new If(b,c)); :}
+           | ELSE IF LPAREN logical_expression:a RPAREN LBRACE instructions_list:B RBRACE               {: RESULT = new LinkedList<>(); RESULT.add(new If(a,b)) :}
+           ;
+
+case_list ::= case_list:a case_statement:b       {: RESULT = a; RESULT.add(b); :}
+            | case_statement:a                   {: RESULT = new LinkedList<>(); RESULT.add(a); :}
+            ;
+
+case_statement ::= CASE expressions:a COLON instructions_list:b BREAK SEMICOLON      {: RESULT = new Case(a, b); :}
+            ;
+
+numerical_expresion ::=    numerical_expresion:a PLUS numerical_expresion:b                        {: RESULT = new Operation(a, b, Operation.OperationType.ADDITION); :}
+                |          numerical_expresion:a MINUS  numerical_expresion:b                      {: RESULT = new Operation(a, b, Operation.OperationType.SUBSTRACTION); :}
+                |          numerical_expresion:a MULT  numerical_expresion:b                       {: RESULT = new Operation(a, b, Operation.OperationType.MULTIPLICATION); :}
+                |          numerical_expresion:a DIV  numerical_expresion:b                        {: RESULT = new Operation(a, b, Operation.OperationType.DIVISION); :}
+                |          MINUS  numerical_expresion:a                                            {: RESULT = new Operation(a, Operation.OperationType.NEGATVE); :}%prec UMINUS
+                |          LPAREN  numerical_expresion:a RPAREN                                    {: RESULT = a; :} 
+                |          INT_CONST:a                                                             {: RESULT = new Operation(new Double(a)); :}
+                |          FLOAT_CONST:a                                                           {: RESULT = new Operation(new Double(a)); :}
+                |          CHARACTER_CONST:a                                                       {: RESULT = new Operation(a, Operation.OperationType.CHARACTER); :}
+                |          IDENTIFIER:a                                                            {: RESULT = new Operation(a, Operation.OperationType.IDENTIFIER); :}
                 ;
 
-string_expression ::=    STR_CONST
-                    |    FLOAT_CONST    
-                    |    numerical_expresion
+string_expression ::=   STR_CONST:a                   {: RESULT = new Operation(a, Operation.OperationType.STRING); :}
+                    |   numerical_expresion:a         {: RESULT = a; :}
                     ;
-
-logical_expression ::=  numerical_expresion EQUALS EQUALS numerical_expresion
-                     |  numerical_expresion LT numerical_expresion 
-                     |  numerical_expresion GT numerical_expresion
-                     |  string_expression EQUALS EQUALS string_expression
+                    
+logical_expression ::=  expressions:a EQUALS EQUALS expressions:b                  {: RESULT = new Operation(a, b, Operation.OperationType.EQUALS_EQUALS); :}
+                     |  numerical_expresion:a LT numerical_expresion:b             {: RESULT = new Operation(a, b, Operation.OperationType.LESS_THAN); :}
+                     |  numerical_expresion:a GT numerical_expresion:b             {: RESULT = new Operation(a, b, Operation.OperationType.GREATHER_THAN); :}
+                     |  numerical_expresion:a LT EQUALS numerical_expresion:b      {: RESULT = new Operation(a, b, Operation.OperationType.LESS_THAN_EQUALS); :}
+                     |  numerical_expresion:a GT EQUALS numerical_expresion:b      {: RESULT = new Operation(a, b, Operation.OperationType.GREATHER_THAN_EQUALS); :}
                      ;        
-*/
+
+expressions ::= string_expression:a         {: RESULT = a; :}
+              | numerical_expresion:a       {: RESULT = a; :}
+              | logical_expression:a        {: RESULT = a; :}
+              ;

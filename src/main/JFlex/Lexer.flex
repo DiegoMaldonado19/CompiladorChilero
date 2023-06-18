@@ -57,17 +57,22 @@ decimal = [\d]+[\.][\d]+
 identifier = ([\_][a-zA-Z][a-zA-Z0-9]+)|([a-zA-Z]([A-Za-z0-9]|[\_])+)
 whitespace = [\s]+
 newline = [\n]
+character_const = [\'][A-Za-z0-9][\']
 
 /* Palabras reservadas */
 int = "entero"
 string = "cadena"
 float = "flotante"
+character = "caracter"
 if = "si"
 else = "sino"
 for = "para"
 while = "mientras"
 read = "Leer"
 write = "Escribir"
+switch = "switch"
+case = "caso"
+break = "break"
 
 /* Estados */
 %state STRING
@@ -88,6 +93,8 @@ write = "Escribir"
     [\)]                          { return symbol(ParserSym.RPAREN, yytext()); }
     [\=]                          { return symbol(ParserSym.EQUALS, yytext()); }
     [\+]                          { return symbol(ParserSym.PLUS, yytext()); }
+    "++"                          { return symbol(ParserSym.INCREMENT, yytext()); }
+    "--"                          { return symbol(ParserSym.DECREMENT, yytext()); }
     [\-]                          { return symbol(ParserSym.MINUS, yytext()); }
     [\*]                          { return symbol(ParserSym.MULT, yytext()); }
     [\/]                          { return symbol(ParserSym.DIV, yytext()); }
@@ -95,6 +102,8 @@ write = "Escribir"
     [\>]                          { return symbol(ParserSym.GT, yytext()); }    /*>=*/
     [\!]                          { return symbol(ParserSym.EXCLAMATION, yytext()); }
     [\|\|]                        { return symbol(ParserSym.OR, yytext()); }
+    {character_const}             { return symbol(ParserSym.CHARACTER_CONST, yytext()); }
+    {character}                   { return symbol(ParserSym.CHARACTER); }
     {int}                         { return symbol(ParserSym.INT, yytext()); }
     {string}                      { return symbol(ParserSym.STRING, yytext()); }
     {float}                       { return symbol(ParserSym.FLOAT, yytext()); }
@@ -131,14 +140,10 @@ write = "Escribir"
     \\               { string_buff.append('\\'); }
 
     \\0            {    yybegin(YYINITIAL);
-                        String messageError = "Cadena contiene un caracter nulo";
-                        error(yytext(), messageError);
-                        return symbol(ParserSym.ERROR, yytext()); }
+                        error(yytext(), "Cadena contiene un caracter nulo"); }
 
    <<EOF>>          {   yybegin(YYINITIAL); 
-                        String messageError = "No se encontró simbolo para finalizar la cadena \"";
-                        error(yytext(), messageError);
-                        return symbol(ParserSym.ERROR, yytext()); } 
+                        error(yytext(), "No se encontró simbolo para finalizar la cadena \""); } 
 
 }
 
@@ -152,14 +157,11 @@ write = "Escribir"
 
     {whitespace}     { /*ignore*/ } 
 
-    <<EOF>>          {  
-                        yybegin(YYINITIAL); 
-                        String messageError = "No se encontró simbolo de final de comentario */";
-                        error(yytext(), messageError);
-                        return symbol(ParserSym.ERROR, yytext()); }  
+    <<EOF>>          {  yybegin(YYINITIAL); 
+                        error(yytext(), "No se encontró simbolo de final de comentario */"); }  
 }
 
 /* Reglas para errores */
-[^]                  {  return symbol(ParserSym.ERROR, yytext()); }
+[^]                  {  error(yytext(), "Simbolo no encontrado dentro de las especificaciones lexicas."); }
 
 <<EOF>>         { return symbol(ParserSym.EOF); }
