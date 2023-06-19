@@ -113,7 +113,9 @@ break = "break"
     {while}                       { return symbol(ParserSym.WHILE, yytext()); }
     {read}                        { return symbol(ParserSym.READ, yytext()); }
     {write}                       { return symbol(ParserSym.WRITE, yytext()); }
-
+    {switch}                      { return symbol(ParserSym.SWITCH, yytext();) }
+    {break}                       { return symbol(ParserSym.BREAK, yytext()); }
+    {case}                        { return symbol(ParserSym.CASE, yytext()); }
     {identifier}                  { return symbol(ParserSym.IDENTIFIER, yytext()); }
     {digit}                       { return symbol(ParserSym.INT_CONST, yytext()); }
     {decimal}                     { return symbol(ParserSym.FLOAT_CONST, yytext()); }

@@ -4,6 +4,8 @@
  */
 package com.compiladorchilero.controllers;
 
+import javax.swing.JTextArea;
+
 /**
  *
  * @author ACER
@@ -11,6 +13,7 @@ package com.compiladorchilero.controllers;
 public class Print implements Instruction{
   
     private final Instruction content;
+    private JTextArea textArea;
   
     public Print(Instruction content) {
         this.content = content;
@@ -18,7 +21,7 @@ public class Print implements Instruction{
 
     @Override
     public Object execute(SymbolTable ts) {
-        System.out.println(content.execute(ts).toString());
+        textArea.append(content.execute(ts).toString()+"\n");
         return null;
     }
 }
