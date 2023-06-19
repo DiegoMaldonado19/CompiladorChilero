@@ -163,6 +163,5 @@ logical_expression ::=  /*expressions:a EQUALS EQUALS expressions:b             
                      ;        
 
 expressions ::= string_expression:a         {: RESULT = a; :}
-              | numerical_expresion:a       {: RESULT = a; :}
               | logical_expression:a        {: RESULT = a; :}
               ;

@@ -8,38 +8,46 @@ package com.compiladorchilero.analyzers;
 /** CUP generated class containing symbol constants. */
 public class ParserSym {
   /* terminals */
-  public static final int READ = 25;
-  public static final int LT = 14;
-  public static final int ELSE = 22;
-  public static final int SEMICOLON = 6;
-  public static final int EXCLAMATION = 16;
-  public static final int PLUS = 10;
-  public static final int INT = 18;
-  public static final int OR = 17;
-  public static final int RBRACE = 3;
-  public static final int RPAREN = 8;
-  public static final int WHILE = 24;
-  public static final int IDENTIFIER = 27;
-  public static final int ERROR = 31;
-  public static final int IF = 21;
-  public static final int STR_CONST = 29;
+  public static final int CHARACTER_CONST = 34;
+  public static final int INCREMENT = 31;
+  public static final int MULT = 12;
+  public static final int EQUALS = 9;
+  public static final int UMINUS = 35;
+  public static final int CASE = 37;
   public static final int LPAREN = 7;
-  public static final int GT = 15;
+  public static final int INT = 18;
+  public static final int FOR = 23;
+  public static final int MINUS = 11;
+  public static final int DECREMENT = 32;
+  public static final int WRITE = 26;
+  public static final int STR_CONST = 29;
+  public static final int CHARACTER = 33;
+  public static final int RPAREN = 8;
+  public static final int SEMICOLON = 6;
+  public static final int LT = 14;
+  public static final int OR = 17;
+  public static final int COMMA = 5;
+  public static final int DIV = 13;
+  public static final int FLOAT_CONST = 30;
+  public static final int PLUS = 10;
+  public static final int IF = 21;
+  public static final int EXCLAMATION = 16;
+  public static final int EOF = 0;
+  public static final int INT_CONST = 28;
+  public static final int error = 1;
+  public static final int BREAK = 39;
+  public static final int SWITCH = 36;
   public static final int COLON = 4;
   public static final int LBRACE = 2;
-  public static final int WRITE = 26;
-  public static final int INT_CONST = 28;
-  public static final int STRING = 19;
-  public static final int EQUALS = 9;
-  public static final int COMMA = 5;
+  public static final int ELSE = 22;
+  public static final int READ = 25;
+  public static final int WHILE = 24;
+  public static final int DEFAULT = 38;
   public static final int FLOAT = 20;
-  public static final int EOF = 0;
-  public static final int MULT = 12;
-  public static final int DIV = 13;
-  public static final int MINUS = 11;
-  public static final int error = 1;
-  public static final int FLOAT_CONST = 30;
-  public static final int FOR = 23;
+  public static final int RBRACE = 3;
+  public static final int STRING = 19;
+  public static final int GT = 15;
+  public static final int IDENTIFIER = 27;
   public static final String[] terminalNames = new String[] {
   "EOF",
   "error",
@@ -72,7 +80,15 @@ public class ParserSym {
   "INT_CONST",
   "STR_CONST",
   "FLOAT_CONST",
-  "ERROR"
+  "INCREMENT",
+  "DECREMENT",
+  "CHARACTER",
+  "CHARACTER_CONST",
+  "UMINUS",
+  "SWITCH",
+  "CASE",
+  "DEFAULT",
+  "BREAK"
   };
 }
 
