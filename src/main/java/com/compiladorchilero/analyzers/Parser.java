@@ -6,7 +6,6 @@
 package com.compiladorchilero.analyzers;
 
 import java.util.*;
-import java_cup.runtime.*;
 import javax.swing.JTextArea;
 import com.compiladorchilero.models.*;
 import com.compiladorchilero.controllers.*;
@@ -335,18 +334,20 @@ public class Parser extends java_cup.runtime.lr_parser {
         this.textArea = textArea;
     }
 
-     * Método al que se llama automáticamente ante algún error sintactico.
-     **/ 
     public void syntax_error(Token token){ 
-        errorList.add(String.format(report_error("Se encontro un error sintactico con el token: "+token.getLexeme()+" en la linea: "+token.getLine()+" en la columna: "+token.getColumn())));
+        errorList.add("Error Sintáctico en la Línea " + token.getLine() +" Columna "+token.getColumn()+ ". No se esperaba este componente: " +token.getLexeme()+".");
     } 
 
-    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{ 
-        errorList.add(String.format(report_error("Error síntactico irrecuperable con el token: "+token.getLexeme()+" en la linea: "+token.getLine()+" en la columna: "+token.getColumn()))); 
+    public void unrecovered_syntax_error(Token token) throws java.lang.Exception{ 
+        errorList.add("Error síntactico irrecuperable en la Línea " + token.getLine()+ " Columna "+token.getColumn()+". Componente " + token.getLexeme() + " no reconocido.");
     }  
 
     public LinkedList<Instruction> getAST() {
         return AST;
+    }
+
+    public LinkedList<String> getErrorList(){
+        return errorList;
     }
 
 
@@ -395,7 +396,7 @@ class CUP$Parser$actions {
 		int aleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int aright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		LinkedList<Instruction> a = (LinkedList<Instruction>)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-
+		 parser.AST=a; 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("file",0, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -434,7 +435,7 @@ class CUP$Parser$actions {
 		int aleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).left;
 		int aright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).right;
 		Operation a = (Operation)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
-		 RESULT = new Print(a, this.textArea); 
+		 RESULT = new Print(a, this.parser.textArea); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("instruction",2, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-4)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -578,6 +579,9 @@ class CUP$Parser$actions {
           case 14: // instruction ::= IDENTIFIER INCREMENT SEMICOLON 
             {
               Instruction RESULT =null;
+		int aleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).left;
+		int aright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).right;
+		Token a = (Token)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
 		 RESULT = new Increment(a.getLexeme()); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("instruction",2, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -587,6 +591,9 @@ class CUP$Parser$actions {
           case 15: // instruction ::= IDENTIFIER DECREMENT SEMICOLON 
             {
               Instruction RESULT =null;
+		int aleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).left;
+		int aright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).right;
+		Token a = (Token)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
 		 RESULT = new Decrement(a.getLexeme()); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("instruction",2, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -620,7 +627,7 @@ class CUP$Parser$actions {
 		int cleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).left;
 		int cright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).right;
 		LinkedList<Instruction> c = (LinkedList<Instruction>)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-1)).value;
-		 RESULT = new For(a, b, c); 
+		 RESULT = new For(Integer.valueOf(String.valueOf(a)), Integer.valueOf(String.valueOf(b)), c); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("instruction",2, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-8)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -674,10 +681,10 @@ class CUP$Parser$actions {
 		int aleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-4)).left;
 		int aright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-4)).right;
 		Operation a = (Operation)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-4)).value;
-		int Bleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).left;
-		int Bright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).right;
-		LinkedList<Instruction> B = (LinkedList<Instruction>)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-1)).value;
-		 RESULT = new LinkedList<>(); RESULT.add(new If(a,b)) 
+		int bleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).left;
+		int bright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).right;
+		LinkedList<Instruction> b = (LinkedList<Instruction>)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-1)).value;
+		 RESULT = new LinkedList<>(); RESULT.add(new If(a,b)); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("else_ifs",3, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-7)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -752,7 +759,7 @@ class CUP$Parser$actions {
 		int bleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int bright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Operation b = (Operation)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 RESULT = new Operation(a, b, Operation.OperationType.ADDITION); 
+		 RESULT = new Operation(a, b, OperationType.ADDITION); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("numerical_expresion",6, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -767,7 +774,7 @@ class CUP$Parser$actions {
 		int bleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int bright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Operation b = (Operation)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 RESULT = new Operation(a, b, Operation.OperationType.SUBSTRACTION); 
+		 RESULT = new Operation(a, b, OperationType.SUBSTRACTION); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("numerical_expresion",6, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -782,7 +789,7 @@ class CUP$Parser$actions {
 		int bleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int bright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Operation b = (Operation)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 RESULT = new Operation(a, b, Operation.OperationType.MULTIPLICATION); 
+		 RESULT = new Operation(a, b, OperationType.MULTIPLICATION); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("numerical_expresion",6, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -797,7 +804,7 @@ class CUP$Parser$actions {
 		int bleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int bright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Operation b = (Operation)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 RESULT = new Operation(a, b, Operation.OperationType.DIVISION); 
+		 RESULT = new Operation(a, b, OperationType.DIVISION); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("numerical_expresion",6, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -809,7 +816,7 @@ class CUP$Parser$actions {
 		int aleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int aright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Operation a = (Operation)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 RESULT = new Operation(a, Operation.OperationType.NEGATIVE); 
+		 RESULT = new Operation(a, OperationType.NEGATIVE); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("numerical_expresion",6, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -833,7 +840,7 @@ class CUP$Parser$actions {
 		int aleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int aright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Token a = (Token)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 RESULT = new Operation(new Double(a)); 
+		 RESULT = new Operation(new Double(a.getLexeme())); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("numerical_expresion",6, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -845,7 +852,7 @@ class CUP$Parser$actions {
 		int aleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int aright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Token a = (Token)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 RESULT = new Operation(new Double(a)); 
+		 RESULT = new Operation(new Double(a.getLexeme())); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("numerical_expresion",6, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -857,7 +864,7 @@ class CUP$Parser$actions {
 		int aleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int aright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Token a = (Token)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 RESULT = new Operation(a.getLexeme(), Operation.OperationType.CHARACTER); 
+		 RESULT = new Operation(a.getLexeme(), OperationType.CHARACTER); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("numerical_expresion",6, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -869,7 +876,7 @@ class CUP$Parser$actions {
 		int aleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int aright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Token a = (Token)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 RESULT = new Operation(a.getLexeme(), Operation.OperationType.IDENTIFIER); 
+		 RESULT = new Operation(a.getLexeme(), OperationType.IDENTIFIER); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("numerical_expresion",6, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -881,7 +888,7 @@ class CUP$Parser$actions {
 		int aleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int aright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Token a = (Token)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 RESULT = new Operation(a.getLexeme(), Operation.OperationType.STRING); 
+		 RESULT = new Operation(a.getLexeme(), OperationType.STRING); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("string_expression",7, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -917,7 +924,7 @@ class CUP$Parser$actions {
 		int bleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int bright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Operation b = (Operation)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 RESULT = new Operation(a, b, Operation.OperationType.LESS_THAN); 
+		 RESULT = new Operation(a, b, OperationType.LESS_THAN); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("logical_expression",8, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -932,7 +939,7 @@ class CUP$Parser$actions {
 		int bleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int bright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Operation b = (Operation)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 RESULT = new Operation(a, b, Operation.OperationType.GREATHER_THAN); 
+		 RESULT = new Operation(a, b, OperationType.GREATHER_THAN); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("logical_expression",8, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -947,7 +954,7 @@ class CUP$Parser$actions {
 		int bleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int bright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Operation b = (Operation)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 RESULT = new Operation(a, b, Operation.OperationType.LESS_THAN_EQUALS); 
+		 RESULT = new Operation(a, b, OperationType.LESS_THAN_EQUALS); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("logical_expression",8, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -962,7 +969,7 @@ class CUP$Parser$actions {
 		int bleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int bright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Operation b = (Operation)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 RESULT = new Operation(a, b, Operation.OperationType.GREATHER_THAN_EQUALS); 
+		 RESULT = new Operation(a, b, OperationType.GREATHER_THAN_EQUALS); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("logical_expression",8, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;

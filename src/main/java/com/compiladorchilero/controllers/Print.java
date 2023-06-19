@@ -12,16 +12,19 @@ import javax.swing.JTextArea;
  */
 public class Print implements Instruction{
   
-    private final Instruction content;
+    private final Operation content;
     private JTextArea textArea;
   
-    public Print(Instruction content) {
+    public Print(Operation content, JTextArea textArea) {
         this.content = content;
     }
 
     @Override
     public Object execute(SymbolTable ts) {
+        /*
         textArea.append(content.execute(ts).toString()+"\n");
+        */
+        System.out.println(content.execute(ts).toString()+"\n");
         return null;
     }
 }

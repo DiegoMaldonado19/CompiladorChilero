@@ -11,11 +11,11 @@ import java.util.LinkedList;
  * @author ACER
  */
 public class For implements Instruction{
-    private Operation begin;
-    private Operation end;
+    private int begin;
+    private int end;
     private LinkedList<Instruction> instructionList;
 
-    public For(Operation begin, Operation end, LinkedList<Instruction> instructionList) {
+    public For(int begin, int end, LinkedList<Instruction> instructionList) {
         this.begin = begin;
         this.end = end;
         this.instructionList = instructionList;

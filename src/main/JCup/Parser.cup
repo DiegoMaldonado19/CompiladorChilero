@@ -3,7 +3,6 @@ package com.compiladorchilero.analyzers;
 
 /* Imports necesarios */
 import java.util.*;
-import java_cup.runtime.*;
 import javax.swing.JTextArea;
 import com.compiladorchilero.models.*;
 import com.compiladorchilero.controllers.*;
@@ -23,18 +22,20 @@ parser code {:
         this.textArea = textArea;
     }
 
-     * Método al que se llama automáticamente ante algún error sintactico.
-     **/ 
     public void syntax_error(Token token){ 
-        errorList.add(String.format(report_error("Se encontro un error sintactico con el token: "+token.getLexeme()+" en la linea: "+token.getLine()+" en la columna: "+token.getColumn())));
+        errorList.add("Error Sintáctico en la Línea " + token.getLine() +" Columna "+token.getColumn()+ ". No se esperaba este componente: " +token.getLexeme()+".");
     } 
 
-    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{ 
-        errorList.add(String.format(report_error("Error síntactico irrecuperable con el token: "+token.getLexeme()+" en la linea: "+token.getLine()+" en la columna: "+token.getColumn()))); 
+    public void unrecovered_syntax_error(Token token) throws java.lang.Exception{ 
+        errorList.add("Error síntactico irrecuperable en la Línea " + token.getLine()+ " Columna "+token.getColumn()+". Componente " + token.getLexeme() + " no reconocido.");
     }  
 
     public LinkedList<Instruction> getAST() {
         return AST;
+    }
+
+    public LinkedList<String> getErrorList(){
+        return errorList;
     }
 :}
 
@@ -101,14 +102,14 @@ precedence nonassoc INCREMENT,DECREMENT;
 /* Definimos con que simbolo no terminal inicia */
 start with file;
 
-file ::=  instructions_list:a
+file ::=  instructions_list:a   {: parser.AST=a; :}
         ;
 
 instructions_list ::=   instructions_list:a instruction:b   {: RESULT = a; RESULT.add(b); :}
                     |   instruction:a                       {: RESULT = new LinkedList<>(); RESULT.add(a); :}
                     ;
 
-instruction ::=  WRITE LPAREN string_expression:a RPAREN SEMICOLON                                                                          {: RESULT = new Print(a, this.textArea); :}/*
+instruction ::=  WRITE LPAREN string_expression:a RPAREN SEMICOLON                                                                          {: RESULT = new Print(a, this.parser.textArea); :}/*
               |  READ LPAREN IDENTIFIER:a RPAREN SEMICOLON                                                                                  {: RESULT = new Read(a.getLexeme); :}*/
               |  INT IDENTIFIER:a SEMICOLON                                                                                                 {: RESULT = new Declaration(a.getLexeme(), Type.NUMBER); :}
               |  STRING IDENTIFIER:a SEMICOLON                                                                                              {: RESULT = new Declaration(a.getLexeme(), Type.STRING); :}
@@ -119,16 +120,16 @@ instruction ::=  WRITE LPAREN string_expression:a RPAREN SEMICOLON              
               |  IF LPAREN logical_expression:a RPAREN LBRACE instructions_list:b RBRACE ELSE LBRACE instructions_list:c RBRACE             {: RESULT = new If(a,b,c); :}
               |  IF LPAREN logical_expression:a RPAREN LBRACE instructions_list:b RBRACE else_ifs:c                                         {: RESULT = new If(a,b,c,null); :}
               |  IF LPAREN logical_expression:a RPAREN LBRACE instructions_list:b RBRACE else_ifs:c ELSE RBRACE instructions_list:d LBRACE  {: RESULT = new If(a,b,c,d); :}
-              |  IDENTIFIER INCREMENT SEMICOLON                                                                                             {: RESULT = new Increment(a.getLexeme()); :}
-              |  IDENTIFIER DECREMENT SEMICOLON                                                                                             {: RESULT = new Decrement(a.getLexeme()); :}
+              |  IDENTIFIER:a INCREMENT SEMICOLON                                                                                             {: RESULT = new Increment(a.getLexeme()); :}
+              |  IDENTIFIER:a DECREMENT SEMICOLON                                                                                             {: RESULT = new Decrement(a.getLexeme()); :}
               |  WHILE LPAREN logical_expression:a RPAREN LBRACE instructions_list:b RBRACE                                                 {: RESULT = new While(a, b); :}
-              |  FOR LPAREN INT_CONST:a COMMA INT_CONST:b RPAREN LBRACE instructions_list:c RBRACE                                          {: RESULT = new For(a, b, c); :}                
+              |  FOR LPAREN INT_CONST:a COMMA INT_CONST:b RPAREN LBRACE instructions_list:c RBRACE                                          {: RESULT = new For(Integer.valueOf(String.valueOf(a)), Integer.valueOf(String.valueOf(b)), c); :}                
               |  SWITCH LPAREN IDENTIFIER:a RPAREN LBRACE case_list:b RBRACE                                                               {: RESULT = new Switch(a, b); :}
               |  error
               ;
 
 else_ifs ::= else_ifs:a ELSE LPAREN logical_expression:b RPAREN LBRACE instructions_list:c RBRACE       {: RESULT = a; RESULT.add(new If(b,c)); :}
-           | ELSE IF LPAREN logical_expression:a RPAREN LBRACE instructions_list:B RBRACE               {: RESULT = new LinkedList<>(); RESULT.add(new If(a,b)) :}
+           | ELSE IF LPAREN logical_expression:a RPAREN LBRACE instructions_list:b RBRACE               {: RESULT = new LinkedList<>(); RESULT.add(new If(a,b)); :}
            ;
 
 case_list ::= case_list:a CASE expressions:b COLON instructions_list:c BREAK SEMICOLON        {: RESULT = a; RESULT.add(new Case(b, c)); :}
@@ -139,27 +140,27 @@ case_statement ::= CASE expressions:a COLON instructions_list:b BREAK SEMICOLON 
                 |  DEFAULT COLON instructions_list:a BREAK SEMICOLON                   {: RESULT = new Case(a); :}
             ;
 
-numerical_expresion ::=    numerical_expresion:a PLUS numerical_expresion:b                        {: RESULT = new Operation(a, b, Operation.OperationType.ADDITION); :}
-                |          numerical_expresion:a MINUS  numerical_expresion:b                      {: RESULT = new Operation(a, b, Operation.OperationType.SUBSTRACTION); :}
-                |          numerical_expresion:a MULT  numerical_expresion:b                       {: RESULT = new Operation(a, b, Operation.OperationType.MULTIPLICATION); :}
-                |          numerical_expresion:a DIV  numerical_expresion:b                        {: RESULT = new Operation(a, b, Operation.OperationType.DIVISION); :}
-                |          MINUS  numerical_expresion:a                                            {: RESULT = new Operation(a, Operation.OperationType.NEGATIVE); :}%prec UMINUS
+numerical_expresion ::=    numerical_expresion:a PLUS numerical_expresion:b                        {: RESULT = new Operation(a, b, OperationType.ADDITION); :}
+                |          numerical_expresion:a MINUS  numerical_expresion:b                      {: RESULT = new Operation(a, b, OperationType.SUBSTRACTION); :}
+                |          numerical_expresion:a MULT  numerical_expresion:b                       {: RESULT = new Operation(a, b, OperationType.MULTIPLICATION); :}
+                |          numerical_expresion:a DIV  numerical_expresion:b                        {: RESULT = new Operation(a, b, OperationType.DIVISION); :}
+                |          MINUS  numerical_expresion:a                                            {: RESULT = new Operation(a, OperationType.NEGATIVE); :}%prec UMINUS
                 |          LPAREN  numerical_expresion:a RPAREN                                    {: RESULT = a; :} 
-                |          INT_CONST:a                                                             {: RESULT = new Operation(new Double(a)); :}
-                |          FLOAT_CONST:a                                                           {: RESULT = new Operation(new Double(a)); :}
-                |          CHARACTER_CONST:a                                                       {: RESULT = new Operation(a.getLexeme(), Operation.OperationType.CHARACTER); :}
-                |          IDENTIFIER:a                                                            {: RESULT = new Operation(a.getLexeme(), Operation.OperationType.IDENTIFIER); :}
+                |          INT_CONST:a                                                             {: RESULT = new Operation(new Double(a.getLexeme())); :}
+                |          FLOAT_CONST:a                                                           {: RESULT = new Operation(new Double(a.getLexeme())); :}
+                |          CHARACTER_CONST:a                                                       {: RESULT = new Operation(a.getLexeme(), OperationType.CHARACTER); :}
+                |          IDENTIFIER:a                                                            {: RESULT = new Operation(a.getLexeme(), OperationType.IDENTIFIER); :}
                 ;
 
-string_expression ::=   STR_CONST:a                   {: RESULT = new Operation(a.getLexeme(), Operation.OperationType.STRING); :}
+string_expression ::=   STR_CONST:a                   {: RESULT = new Operation(a.getLexeme(), OperationType.STRING); :}
                     |   numerical_expresion:a         {: RESULT = a; :}
                     ;
                     
 logical_expression ::=  /*expressions:a EQUALS EQUALS expressions:b                  {: RESULT = new Operation(a, b, Operation.OperationType.EQUALS_EQUALS); :}*/
-                     |  numerical_expresion:a LT numerical_expresion:b             {: RESULT = new Operation(a, b, Operation.OperationType.LESS_THAN); :}
-                     |  numerical_expresion:a GT numerical_expresion:b             {: RESULT = new Operation(a, b, Operation.OperationType.GREATHER_THAN); :}
-                     |  numerical_expresion:a LT EQUALS numerical_expresion:b      {: RESULT = new Operation(a, b, Operation.OperationType.LESS_THAN_EQUALS); :}
-                     |  numerical_expresion:a GT EQUALS numerical_expresion:b      {: RESULT = new Operation(a, b, Operation.OperationType.GREATHER_THAN_EQUALS); :}
+                     |  numerical_expresion:a LT numerical_expresion:b             {: RESULT = new Operation(a, b, OperationType.LESS_THAN); :}
+                     |  numerical_expresion:a GT numerical_expresion:b             {: RESULT = new Operation(a, b, OperationType.GREATHER_THAN); :}
+                     |  numerical_expresion:a LT EQUALS numerical_expresion:b      {: RESULT = new Operation(a, b, OperationType.LESS_THAN_EQUALS); :}
+                     |  numerical_expresion:a GT EQUALS numerical_expresion:b      {: RESULT = new Operation(a, b, OperationType.GREATHER_THAN_EQUALS); :}
                      ;        
 
 expressions ::= string_expression:a         {: RESULT = a; :}
