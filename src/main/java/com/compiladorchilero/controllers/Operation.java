@@ -38,9 +38,18 @@ public class Operation implements Instruction {
 
     @Override
     public Object execute(SymbolTable ts) {
+        double op=0;
+
         /* ======== OPERACIONES ARITMETICAS ======== */
         if (type == this.type.DIVISION) {
-            return (Double) leftOperator.execute(ts) / (Double) rightOperator.execute(ts);
+            try {
+                op = (Double) leftOperator.execute(ts) / (Double) rightOperator.execute(ts);
+            } catch (Exception e) {
+                
+            } 
+            
+            return op;
+
         } else if (type == this.type.MULTIPLICATION) {
             return (Double) leftOperator.execute(ts) * (Double) rightOperator.execute(ts);
         } else if (type == this.type.SUBSTRACTION) {
@@ -62,12 +71,20 @@ public class Operation implements Instruction {
             return ((Double) leftOperator.execute(ts)).doubleValue() > ((Double) rightOperator.execute(ts)).doubleValue();
         } else if (type == this.type.LESS_THAN) {
             return ((Double) leftOperator.execute(ts)).doubleValue() < ((Double) rightOperator.execute(ts)).doubleValue();
-        } /* else if (type == this.type.EQUALS_EQUALS) {
-            //TODO: == OPERATION
-        } */else if (type == this.type.GREATHER_THAN_EQUALS) {
+        } else if (type == this.type.EQUALS_EQUALS) {
+            return leftOperator.execute(ts) == rightOperator.execute(ts);
+        } else if (type == this.type.GREATHER_THAN_EQUALS) {
             return ((Double) leftOperator.execute(ts)).doubleValue() >= ((Double) rightOperator.execute(ts)).doubleValue();
         } else if (type == this.type.LESS_THAN_EQUALS) {
             return ((Double) leftOperator.execute(ts)).doubleValue() <= ((Double) rightOperator.execute(ts)).doubleValue();
+        } else if (type == this.type.BOOLEAN) {
+            if (String.valueOf(value).equals("true")) {
+                return true;
+            } else if (String.valueOf(value).equals("false")) {
+                return false;
+            } else {
+                return null;
+            }
         } else {
             return null;
         }

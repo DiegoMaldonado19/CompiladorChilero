@@ -78,6 +78,8 @@ terminal Token SWITCH;
 terminal Token CASE;
 terminal Token DEFAULT;
 terminal Token BREAK;
+terminal Token TRUE;
+terminal Token False;
 
 
 /* Declaracion de elementos no terminales */
@@ -90,7 +92,8 @@ non terminal Instruction case_statement;
 non terminal Operation numerical_expresion;
 non terminal Operation string_expression;
 non terminal Operation logical_expression;
-non terminal Operation expressions;
+non terminal Operation values;
+non terminal Operation boolean_value;
 
 /* Declaracion de precedencia */
 precedence left PLUS, MINUS;
@@ -115,7 +118,8 @@ instruction ::=  WRITE LPAREN string_expression:a RPAREN SEMICOLON              
               |  STRING IDENTIFIER:a SEMICOLON                                                                                              {: RESULT = new Declaration(a.getLexeme(), Type.STRING); :}
               |  FLOAT IDENTIFIER:a SEMICOLON                                                                                               {: RESULT = new Declaration(a.getLexeme(), Type.FLOAT); :}
               |  CHARACTER IDENTIFIER:a SEMICOLON                                                                                           {: RESULT = new Declaration(a.getLexeme(), Type.CHARACTER); :}
-              |  IDENTIFIER:a EQUALS expressions:b SEMICOLON                                                                                 {: RESULT = new Assignment(a.getLexeme(), b); :}
+              |  BOOLEAN IDENTIFIER:a SEMICOLON                                                                                             {: RESULT = new Declaration(a.getLexeme(), Type.BOOLEAN;); :}
+              |  IDENTIFIER:a EQUALS values:b SEMICOLON                                                                                     {: RESULT = new Assignment(a.getLexeme(), b); :}
               |  IF LPAREN logical_expression:a RPAREN LBRACE instructions_list:b RBRACE                                                    {: RESULT = new If(a,b); :}
               |  IF LPAREN logical_expression:a RPAREN LBRACE instructions_list:b RBRACE ELSE LBRACE instructions_list:c RBRACE             {: RESULT = new If(a,b,c); :}
               |  IF LPAREN logical_expression:a RPAREN LBRACE instructions_list:b RBRACE else_ifs:c                                         {: RESULT = new If(a,b,c,null); :}
@@ -132,11 +136,11 @@ else_ifs ::= else_ifs:a ELSE LPAREN logical_expression:b RPAREN LBRACE instructi
            | ELSE IF LPAREN logical_expression:a RPAREN LBRACE instructions_list:b RBRACE               {: RESULT = new LinkedList<>(); RESULT.add(new If(a,b)); :}
            ;
 
-case_list ::= case_list:a CASE expressions:b COLON instructions_list:c BREAK SEMICOLON        {: RESULT = a; RESULT.add(new Case(b, c)); :}
-            | CASE expressions:a COLON instructions_list:b BREAK SEMICOLON                    {: RESULT = new LinkedList<>(); RESULT.add(new Case(a, b)); :}
+case_list ::= case_list:a CASE values:b COLON instructions_list:c BREAK SEMICOLON        {: RESULT = a; RESULT.add(new Case(b, c)); :}
+            | CASE values:a COLON instructions_list:b BREAK SEMICOLON                    {: RESULT = new LinkedList<>(); RESULT.add(new Case(a, b)); :}
             ;
 
-case_statement ::= CASE expressions:a COLON instructions_list:b BREAK SEMICOLON      {: RESULT = new Case(a, b); :}
+case_statement ::= CASE values:a COLON instructions_list:b BREAK SEMICOLON      {: RESULT = new Case(a, b); :}
                 |  DEFAULT COLON instructions_list:a BREAK SEMICOLON                   {: RESULT = new Case(a); :}
             ;
 
@@ -151,10 +155,6 @@ numerical_expresion ::=    numerical_expresion:a PLUS numerical_expresion:b     
                 |          CHARACTER_CONST:a                                                       {: RESULT = new Operation(a.getLexeme(), OperationType.CHARACTER); :}
                 |          IDENTIFIER:a                                                            {: RESULT = new Operation(a.getLexeme(), OperationType.IDENTIFIER); :}
                 ;
-
-string_expression ::=   STR_CONST:a                   {: RESULT = new Operation(a.getLexeme(), OperationType.STRING); :}
-                    |   numerical_expresion:a         {: RESULT = a; :}
-                    ;
                     
 logical_expression ::=  /*expressions:a EQUALS EQUALS expressions:b                  {: RESULT = new Operation(a, b, Operation.OperationType.EQUALS_EQUALS); :}*/
                      |  numerical_expresion:a LT numerical_expresion:b             {: RESULT = new Operation(a, b, OperationType.LESS_THAN); :}
@@ -166,3 +166,12 @@ logical_expression ::=  /*expressions:a EQUALS EQUALS expressions:b             
 expressions ::= string_expression:a         {: RESULT = a; :}
               | logical_expression:a        {: RESULT = a; :}
               ;
+
+value ::= numerical_expresion       {: RESULT = a; :}
+        | STR_CONST                 {: RESULT = new Operation(a.getLexeme(), OperationType.STRING); :}
+        | boolean_value             {: RESULT = a; :}
+        ;
+
+boolean_value ::=   TRUE            {: RESULT = new Operation(a.getLexeme(), OperationType.BOOLEAN); :}
+                |   FALSE           {: RESULT = new Operation(a.getLexeme(), OperationType.BOOLEAN); :}
+                ;

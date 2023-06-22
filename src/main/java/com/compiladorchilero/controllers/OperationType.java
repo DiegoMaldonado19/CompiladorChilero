@@ -22,5 +22,6 @@ public enum OperationType {
     LESS_THAN,
     EQUALS_EQUALS,
     GREATHER_THAN_EQUALS,
-    LESS_THAN_EQUALS
+    LESS_THAN_EQUALS,
+    BOOLEAN
 }

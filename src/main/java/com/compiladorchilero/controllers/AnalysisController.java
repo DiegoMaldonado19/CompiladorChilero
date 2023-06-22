@@ -34,6 +34,7 @@ public class AnalysisController {
         }
         
         executeAST(AST, mainFrame);
+        this.AST.clear();
     }
     
     private void fillTextAreas(JTextArea errorLogArea, JTextArea resultArea, LinkedList<String> syntaxErrors, ArrayList<String> lexicalErrors){

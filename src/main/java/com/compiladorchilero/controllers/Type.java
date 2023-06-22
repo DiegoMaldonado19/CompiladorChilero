@@ -12,5 +12,6 @@ public enum Type {
     NUMBER,
     FLOAT,
     STRING,
-    CHARACTER
+    CHARACTER,
+    BOOLEAN
 }

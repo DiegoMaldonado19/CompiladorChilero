@@ -57,7 +57,6 @@ decimal = [\d]+[\.][\d]+
 identifier = ([\_][a-zA-Z][a-zA-Z0-9]+)|([a-zA-Z]([A-Za-z0-9]|[\_])+)
 whitespace = [\s]+
 newline = [\n]
-character_const = [\'][A-Za-z0-9][\']
 
 /* Palabras reservadas */
 int = "entero"
@@ -73,10 +72,14 @@ write = "Escribir"
 switch = "switch"
 case = "caso"
 break = "break"
+true = "true"
+false = "false"
+boolean = "boolean"
 
 /* Estados */
 %state STRING
 %state COMMENT
+$state CHARACTER
 
 %%
 
@@ -84,6 +87,7 @@ break = "break"
     {whitespace}                  {/*ignore*/}
     [\"]                          {   string_buff.setLength(0); yybegin(STRING); }
     "/*"                          { yybegin(COMMENT); }
+    [\']                          { yybegin(CHARACTER); }
     [\{]                          { return symbol(ParserSym.LBRACE, yytext()); }
     [\}]                          { return symbol(ParserSym.RBRACE, yytext()); }
     [\:]                          { return symbol(ParserSym.COLON, yytext()); }
@@ -102,8 +106,8 @@ break = "break"
     [\>]                          { return symbol(ParserSym.GT, yytext()); }    /*>=*/
     [\!]                          { return symbol(ParserSym.EXCLAMATION, yytext()); }
     [\|\|]                        { return symbol(ParserSym.OR, yytext()); }
-    {character_const}             { return symbol(ParserSym.CHARACTER_CONST, yytext()); }
     {character}                   { return symbol(ParserSym.CHARACTER); }
+    {boolean}                     { return symbol(ParserSym.BOOLEAN); }
     {int}                         { return symbol(ParserSym.INT, yytext()); }
     {string}                      { return symbol(ParserSym.STRING, yytext()); }
     {float}                       { return symbol(ParserSym.FLOAT, yytext()); }
@@ -161,6 +165,16 @@ break = "break"
 
     <<EOF>>          {  yybegin(YYINITIAL); 
                         error(yytext(), "No se encontró simbolo de final de comentario */"); }  
+}
+
+<CHARACTER>{
+    [\']              { yybegin(YYINITIAL); }
+    [A-Za-z0-9]       { return symbol(ParserSym.CHARACTER_CONST, yytext()); }
+
+    [^]               { error(yytext(), "Segun la especificacion lexica, solo se pueden tener caracteres de un elemento."); }
+
+    <<EOF>>          {  yybegin(YYINITIAL); 
+                        error(yytext(), "No se encontró simbolo de final de comentario \'"); }
 }
 
 /* Reglas para errores */
