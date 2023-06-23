@@ -21,10 +21,7 @@ public class Print implements Instruction {
 
     @Override
     public Object execute(SymbolTable ts, JTextArea areaText, MainFrame mainFrame) {
-        /*
-        textArea.append(content.execute(ts).toString()+"\n");
-         */
-        System.out.println(content.execute(ts, areaText, mainFrame).toString() + "\n");
+        areaText.append(content.execute(ts, areaText, mainFrame) + "\n");
         return null;
     }
 }

@@ -5,6 +5,7 @@
 package com.compiladorchilero.controllers;
 
 import com.compiladorchilero.views.MainFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 
 /**
@@ -41,27 +42,45 @@ public class Operation implements Instruction {
 
     @Override
     public Object execute(SymbolTable ts, JTextArea areaText, MainFrame mainFrame) {
-        double op=0;
+        double op = 0;
+        boolean boolOp = false;
 
         /* ======== OPERACIONES ARITMETICAS ======== */
         if (type == this.type.DIVISION) {
             try {
-                op = (Double) leftOperator.execute(ts,areaText, mainFrame) / (Double) rightOperator.execute(ts, areaText, mainFrame);
+                return (Double) leftOperator.execute(ts, areaText, mainFrame) / (Double) rightOperator.execute(ts, areaText, mainFrame);
             } catch (Exception e) {
-                
-            } 
-            
+                JOptionPane.showMessageDialog(mainFrame, "Error encontrado durante la operacion");
+            }
             return op;
-
         } else if (type == this.type.MULTIPLICATION) {
-            return (Double) leftOperator.execute(ts,areaText,mainFrame) * (Double) rightOperator.execute(ts,areaText,mainFrame);
+            try {
+                op = (Double) leftOperator.execute(ts, areaText, mainFrame) * (Double) rightOperator.execute(ts, areaText, mainFrame);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(mainFrame, "Error encontrado durante la operacion");
+            }
+            return op;
         } else if (type == this.type.SUBSTRACTION) {
-            return (Double) leftOperator.execute(ts,areaText,mainFrame) - (Double) rightOperator.execute(ts,areaText,mainFrame);
+            try {
+                op = (Double) leftOperator.execute(ts, areaText, mainFrame) - (Double) rightOperator.execute(ts, areaText, mainFrame);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(mainFrame, "Error encontrado durante la operacion");
+            }
+            return op;
         } else if (type == this.type.ADDITION) {
-            return (Double) leftOperator.execute(ts,areaText,mainFrame) + (Double) rightOperator.execute(ts,areaText,mainFrame);
+            try {
+                op = (Double) leftOperator.execute(ts, areaText, mainFrame) + (Double) rightOperator.execute(ts, areaText, mainFrame);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(mainFrame, "Error encontrado durante la operacion");
+            }
+            return op;
         } else if (type == this.type.NEGATIVE) {
-            return (Double) leftOperator.execute(ts,areaText,mainFrame) * -1;
-
+            try {
+                op = (Double) leftOperator.execute(ts, areaText, mainFrame) * -1;
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(mainFrame, "Error encontrado durante la operacion");
+            }
+            return op;
         } /* ======== OPERACIONES UNARIOS ======== */ else if (type == this.type.NUMBER) {
             return new Double(value.toString());
         } else if (type == this.type.IDENTIFIER) {
@@ -71,15 +90,40 @@ public class Operation implements Instruction {
         } else if (type == this.type.CHARACTER) {
             return generateChar();
         } /* ======== OPERACIONES RELACIONALES ======== */ else if (type == this.type.GREATHER_THAN) {
-            return ((Double) leftOperator.execute(ts,areaText,mainFrame)).doubleValue() > ((Double) rightOperator.execute(ts,areaText,mainFrame)).doubleValue();
+            try {
+                boolOp = ((Double) leftOperator.execute(ts, areaText, mainFrame)) > ((Double) rightOperator.execute(ts, areaText, mainFrame));
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(mainFrame, "Error encontrado durante la operacion");
+            }
+            return boolOp;
         } else if (type == this.type.LESS_THAN) {
-            return ((Double) leftOperator.execute(ts,areaText,mainFrame)).doubleValue() < ((Double) rightOperator.execute(ts,areaText,mainFrame)).doubleValue();
+            try {
+                boolOp = ((Double) leftOperator.execute(ts, areaText, mainFrame)) < ((Double) rightOperator.execute(ts, areaText, mainFrame));
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(mainFrame, "Error encontrado durante la operacion");
+            }
+            return boolOp;
         } else if (type == this.type.EQUALS_EQUALS) {
-            return leftOperator.execute(ts,areaText,mainFrame) == rightOperator.execute(ts,areaText,mainFrame);
+            try {
+                boolOp = leftOperator.execute(ts, areaText, mainFrame) == rightOperator.execute(ts, areaText, mainFrame);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(mainFrame, "Error encontrado durante la operacion");
+            }
+            return boolOp;
         } else if (type == this.type.GREATHER_THAN_EQUALS) {
-            return ((Double) leftOperator.execute(ts,areaText,mainFrame)).doubleValue() >= ((Double) rightOperator.execute(ts,areaText,mainFrame)).doubleValue();
+            try {
+                boolOp = ((Double) leftOperator.execute(ts, areaText, mainFrame)).doubleValue() >= ((Double) rightOperator.execute(ts, areaText, mainFrame)).doubleValue();
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(mainFrame, "Error encontrado durante la operacion");
+            }
+            return boolOp;
         } else if (type == this.type.LESS_THAN_EQUALS) {
-            return ((Double) leftOperator.execute(ts,areaText,mainFrame)).doubleValue() <= ((Double) rightOperator.execute(ts,areaText,mainFrame)).doubleValue();
+            try {
+                boolOp = ((Double) leftOperator.execute(ts, areaText, mainFrame)).doubleValue() <= ((Double) rightOperator.execute(ts, areaText, mainFrame)).doubleValue();
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(mainFrame, "Error encontrado durante la operacion");
+            }
+            return boolOp;
         } else if (type == this.type.BOOLEAN) {
             if (String.valueOf(value).equals("true")) {
                 return true;
@@ -99,7 +143,7 @@ public class Operation implements Instruction {
      * @return un valor de tipo char obtenido de una cadena
      */
     private char generateChar() {
-        String cad = this.value.toString().substring(1, this.value.toString().length() - 1);
+        String cad = this.value.toString();
         switch (cad) {
             case "\\n":
                 return '\n';
