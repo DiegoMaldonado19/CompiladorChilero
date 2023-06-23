@@ -4,10 +4,13 @@
  */
 package com.compiladorchilero.controllers;
 
+import com.compiladorchilero.views.MainFrame;
+import javax.swing.JTextArea;
+
 /**
  *
  * @author ACER
  */
 public interface Instruction {
-    public Object execute(SymbolTable ts);
+    public Object execute(SymbolTable ts, JTextArea areaText, MainFrame mainFrame);
 }

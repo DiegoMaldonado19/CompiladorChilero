@@ -4,6 +4,9 @@
  */
 package com.compiladorchilero.controllers;
 
+import com.compiladorchilero.views.MainFrame;
+import javax.swing.JTextArea;
+
 /**
  *
  * @author ACER
@@ -25,7 +28,7 @@ public class Increment implements Instruction{
      * @return el valor anterior al incremento.
      */
     @Override
-    public Object execute(SymbolTable ts) {
+    public Object execute(SymbolTable ts,JTextArea areaText, MainFrame mainFrame) {
         Object tmp = ts.getValue(id.toString());
         ts.setValue(id, ((Double) tmp + 1));
         return tmp;

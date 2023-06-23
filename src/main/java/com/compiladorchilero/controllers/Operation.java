@@ -4,6 +4,9 @@
  */
 package com.compiladorchilero.controllers;
 
+import com.compiladorchilero.views.MainFrame;
+import javax.swing.JTextArea;
+
 /**
  *
  * @author ACER
@@ -37,13 +40,13 @@ public class Operation implements Instruction {
     }
 
     @Override
-    public Object execute(SymbolTable ts) {
+    public Object execute(SymbolTable ts, JTextArea areaText, MainFrame mainFrame) {
         double op=0;
 
         /* ======== OPERACIONES ARITMETICAS ======== */
         if (type == this.type.DIVISION) {
             try {
-                op = (Double) leftOperator.execute(ts) / (Double) rightOperator.execute(ts);
+                op = (Double) leftOperator.execute(ts,areaText, mainFrame) / (Double) rightOperator.execute(ts, areaText, mainFrame);
             } catch (Exception e) {
                 
             } 
@@ -51,13 +54,13 @@ public class Operation implements Instruction {
             return op;
 
         } else if (type == this.type.MULTIPLICATION) {
-            return (Double) leftOperator.execute(ts) * (Double) rightOperator.execute(ts);
+            return (Double) leftOperator.execute(ts,areaText,mainFrame) * (Double) rightOperator.execute(ts,areaText,mainFrame);
         } else if (type == this.type.SUBSTRACTION) {
-            return (Double) leftOperator.execute(ts) - (Double) rightOperator.execute(ts);
+            return (Double) leftOperator.execute(ts,areaText,mainFrame) - (Double) rightOperator.execute(ts,areaText,mainFrame);
         } else if (type == this.type.ADDITION) {
-            return (Double) leftOperator.execute(ts) + (Double) rightOperator.execute(ts);
+            return (Double) leftOperator.execute(ts,areaText,mainFrame) + (Double) rightOperator.execute(ts,areaText,mainFrame);
         } else if (type == this.type.NEGATIVE) {
-            return (Double) leftOperator.execute(ts) * -1;
+            return (Double) leftOperator.execute(ts,areaText,mainFrame) * -1;
 
         } /* ======== OPERACIONES UNARIOS ======== */ else if (type == this.type.NUMBER) {
             return new Double(value.toString());
@@ -68,15 +71,15 @@ public class Operation implements Instruction {
         } else if (type == this.type.CHARACTER) {
             return generateChar();
         } /* ======== OPERACIONES RELACIONALES ======== */ else if (type == this.type.GREATHER_THAN) {
-            return ((Double) leftOperator.execute(ts)).doubleValue() > ((Double) rightOperator.execute(ts)).doubleValue();
+            return ((Double) leftOperator.execute(ts,areaText,mainFrame)).doubleValue() > ((Double) rightOperator.execute(ts,areaText,mainFrame)).doubleValue();
         } else if (type == this.type.LESS_THAN) {
-            return ((Double) leftOperator.execute(ts)).doubleValue() < ((Double) rightOperator.execute(ts)).doubleValue();
+            return ((Double) leftOperator.execute(ts,areaText,mainFrame)).doubleValue() < ((Double) rightOperator.execute(ts,areaText,mainFrame)).doubleValue();
         } else if (type == this.type.EQUALS_EQUALS) {
-            return leftOperator.execute(ts) == rightOperator.execute(ts);
+            return leftOperator.execute(ts,areaText,mainFrame) == rightOperator.execute(ts,areaText,mainFrame);
         } else if (type == this.type.GREATHER_THAN_EQUALS) {
-            return ((Double) leftOperator.execute(ts)).doubleValue() >= ((Double) rightOperator.execute(ts)).doubleValue();
+            return ((Double) leftOperator.execute(ts,areaText,mainFrame)).doubleValue() >= ((Double) rightOperator.execute(ts,areaText,mainFrame)).doubleValue();
         } else if (type == this.type.LESS_THAN_EQUALS) {
-            return ((Double) leftOperator.execute(ts)).doubleValue() <= ((Double) rightOperator.execute(ts)).doubleValue();
+            return ((Double) leftOperator.execute(ts,areaText,mainFrame)).doubleValue() <= ((Double) rightOperator.execute(ts,areaText,mainFrame)).doubleValue();
         } else if (type == this.type.BOOLEAN) {
             if (String.valueOf(value).equals("true")) {
                 return true;

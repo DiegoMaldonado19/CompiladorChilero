@@ -4,27 +4,27 @@
  */
 package com.compiladorchilero.controllers;
 
+import com.compiladorchilero.views.MainFrame;
 import javax.swing.JTextArea;
 
 /**
  *
  * @author ACER
  */
-public class Print implements Instruction{
-  
+public class Print implements Instruction {
+
     private final Operation content;
-    private JTextArea textArea;
-  
-    public Print(Operation content, JTextArea textArea) {
+
+    public Print(Operation content) {
         this.content = content;
     }
 
     @Override
-    public Object execute(SymbolTable ts) {
+    public Object execute(SymbolTable ts, JTextArea areaText, MainFrame mainFrame) {
         /*
         textArea.append(content.execute(ts).toString()+"\n");
-        */
-        System.out.println(content.execute(ts).toString()+"\n");
+         */
+        System.out.println(content.execute(ts, areaText, mainFrame).toString() + "\n");
         return null;
     }
 }

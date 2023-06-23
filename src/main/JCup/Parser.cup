@@ -3,7 +3,6 @@ package com.compiladorchilero.analyzers;
 
 /* Imports necesarios */
 import java.util.*;
-import javax.swing.JTextArea;
 import com.compiladorchilero.models.*;
 import com.compiladorchilero.controllers.*;
 
@@ -13,7 +12,6 @@ class Parser;
 parser code {:
     private LinkedList<Instruction> AST;
     private LinkedList<String> errorList;
-    private JTextArea textArea;
 
     public Parser(Lexer lex, JTextArea textArea){
         super(lex);
@@ -112,7 +110,7 @@ instructions_list ::=   instructions_list:a instruction:b   {: RESULT = a; RESUL
                     |   instruction:a                       {: RESULT = new LinkedList<>(); RESULT.add(a); :}
                     ;
 
-instruction ::=  WRITE LPAREN string_expression:a RPAREN SEMICOLON                                                                          {: RESULT = new Print(a, this.parser.textArea); :}/*
+instruction ::=  WRITE LPAREN string_expression:a RPAREN SEMICOLON                                                                          {: RESULT = new Print(a); :}/*
               |  READ LPAREN IDENTIFIER:a RPAREN SEMICOLON                                                                                  {: RESULT = new Read(a.getLexeme); :}*/
               |  INT IDENTIFIER:a SEMICOLON                                                                                                 {: RESULT = new Declaration(a.getLexeme(), Type.NUMBER); :}
               |  STRING IDENTIFIER:a SEMICOLON                                                                                              {: RESULT = new Declaration(a.getLexeme(), Type.STRING); :}

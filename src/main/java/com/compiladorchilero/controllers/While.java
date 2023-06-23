@@ -4,7 +4,9 @@
  */
 package com.compiladorchilero.controllers;
 
+import com.compiladorchilero.views.MainFrame;
 import java.util.LinkedList;
+import javax.swing.JTextArea;
 
 /**
  *
@@ -21,12 +23,12 @@ public class While implements Instruction{
     }
 
     @Override
-    public Object execute(SymbolTable ts) {
-        while((Boolean)condition.execute(ts)){
+    public Object execute(SymbolTable ts, JTextArea areaText, MainFrame mainFrame) {
+        while((Boolean)condition.execute(ts, areaText, mainFrame)){
             SymbolTable localTable=new SymbolTable();
             localTable.addAll(ts);
             for(Instruction ins:instructionList){
-                ins.execute(localTable);
+                ins.execute(localTable, areaText, mainFrame);
             }
         }
         return null;

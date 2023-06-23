@@ -4,7 +4,9 @@
  */
 package com.compiladorchilero.controllers;
 
+import com.compiladorchilero.views.MainFrame;
 import java.util.LinkedList;
+import javax.swing.JTextArea;
 
 /**
  *
@@ -25,11 +27,11 @@ public class Case implements Instruction{
     }
 
     @Override
-    public Object execute(SymbolTable ts) {
+    public Object execute(SymbolTable ts, JTextArea areaText, MainFrame mainFrame) {
        SymbolTable localTable = new SymbolTable();
         localTable.addAll(ts);
         for(Instruction in: instructionList){
-            in.execute(localTable);
+            in.execute(localTable, areaText, mainFrame);
         }
         return null;
     }

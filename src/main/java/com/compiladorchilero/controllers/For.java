@@ -4,7 +4,9 @@
  */
 package com.compiladorchilero.controllers;
 
+import com.compiladorchilero.views.MainFrame;
 import java.util.LinkedList;
+import javax.swing.JTextArea;
 
 /**
  *
@@ -22,14 +24,14 @@ public class For implements Instruction{
     }
     
     @Override
-    public Object execute(SymbolTable ts){
+    public Object execute(SymbolTable ts, JTextArea areaText, MainFrame mainFrame){
         int beginTmp = Integer.valueOf(String.valueOf(begin));
         int endTmp = Integer.valueOf(String.valueOf(end));
         for(int i=beginTmp; i<endTmp; i++){
             SymbolTable localTable=new SymbolTable();
             localTable.addAll(ts);
             for(Instruction ins:instructionList){
-                ins.execute(localTable);
+                ins.execute(localTable, areaText, mainFrame);
             }
         }
         return null;

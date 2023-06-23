@@ -4,6 +4,9 @@
  */
 package com.compiladorchilero.controllers;
 
+import com.compiladorchilero.views.MainFrame;
+import javax.swing.JTextArea;
+
 /**
  *
  * @author ACER
@@ -19,7 +22,7 @@ public class Declaration implements Instruction{
     }
 
     @Override
-    public Object execute(SymbolTable ts) {
+    public Object execute(SymbolTable ts, JTextArea areaText, MainFrame mainFrame) {
         ts.add(new Symbol(id, type));
         return null;
     }

@@ -6,10 +6,10 @@ package com.compiladorchilero.controllers;
 
 import com.compiladorchilero.analyzers.*;
 import com.compiladorchilero.models.Token;
+import com.compiladorchilero.views.MainFrame;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.LinkedList;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 
@@ -19,7 +19,7 @@ import javax.swing.JTextArea;
  */
 public class AnalysisController {
     private LinkedList<Instruction> AST;
-    public void startAnalysis(JTextArea writingArea, JTextArea errorLogArea, JTextArea resultArea, JFrame mainFrame) {
+    public void startAnalysis(JTextArea writingArea, JTextArea errorLogArea, JTextArea resultArea, MainFrame mainFrame) {
         StringReader input = new StringReader(writingArea.getText());
         Lexer lexer = new Lexer(input);
         Parser parser = new Parser(lexer, writingArea);
@@ -33,7 +33,7 @@ public class AnalysisController {
             JOptionPane.showMessageDialog(mainFrame, "Error encontrado durante la tarea de parsing");
         }
         
-        executeAST(AST, mainFrame);
+        executeAST(AST, mainFrame, resultArea);
         this.AST.clear();
     }
     
@@ -53,7 +53,7 @@ public class AnalysisController {
         }
     }
     
-    private static void executeAST(LinkedList<Instruction> ast, JFrame mainFrame) {
+    private static void executeAST(LinkedList<Instruction> ast, MainFrame mainFrame, JTextArea areaText) {
         if(ast==null){
             JOptionPane.showMessageDialog(mainFrame, "No es posible ejecutar las instrucciones porque el árbol no fue cargado de forma adecuada por la existencia de errores léxicos o sintácticos.");
             return;
@@ -62,7 +62,7 @@ public class AnalysisController {
 
         for(Instruction ins:ast){
             if(ins!=null)
-                ins.execute(ts);
+                ins.execute(ts, areaText, mainFrame);
         }
     }
 }
