@@ -13,5 +13,6 @@ public enum Type {
     FLOAT,
     STRING,
     CHARACTER,
-    BOOLEAN
+    BOOLEAN,
+    INVALID
 }

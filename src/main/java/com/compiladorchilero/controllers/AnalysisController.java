@@ -22,7 +22,7 @@ public class AnalysisController {
     public void startAnalysis(JTextArea writingArea, JTextArea errorLogArea, JTextArea resultArea, MainFrame mainFrame) {
         StringReader input = new StringReader(writingArea.getText());
         Lexer lexer = new Lexer(input);
-        Parser parser = new Parser(lexer, writingArea);
+        Parser parser = new Parser(lexer);
 
         try {
             parser.parse();

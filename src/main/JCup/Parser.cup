@@ -13,11 +13,10 @@ parser code {:
     private LinkedList<Instruction> AST;
     private LinkedList<String> errorList;
 
-    public Parser(Lexer lex, JTextArea textArea){
+    public Parser(Lexer lex){
         super(lex);
         this.AST = new LinkedList<Instruction>();
         this.errorList = new LinkedList<String>();
-        this.textArea = textArea;
     }
 
     public void syntax_error(Token token){ 
@@ -77,7 +76,10 @@ terminal Token CASE;
 terminal Token DEFAULT;
 terminal Token BREAK;
 terminal Token TRUE;
-terminal Token False;
+terminal Token FALSE;
+terminal Token BOOLEAN;
+terminal Token VOID;
+terminal Token FUNC;
 
 
 /* Declaracion de elementos no terminales */
@@ -86,12 +88,15 @@ non terminal LinkedList<Instruction> instructions_list;
 non terminal Instruction instruction;
 non terminal LinkedList<Instruction> else_ifs;
 non terminal LinkedList<Instruction> case_list;
+non terminal LinkedList<Instruction> parameter_list;
 non terminal Instruction case_statement;
 non terminal Operation numerical_expresion;
-non terminal Operation string_expression;
 non terminal Operation logical_expression;
-non terminal Operation values;
 non terminal Operation boolean_value;
+non terminal Instruction function;
+non terminal String var_type;
+non terminal Instruction declaration;
+non terminal Operation value;
 
 /* Declaracion de precedencia */
 precedence left PLUS, MINUS;
@@ -110,14 +115,10 @@ instructions_list ::=   instructions_list:a instruction:b   {: RESULT = a; RESUL
                     |   instruction:a                       {: RESULT = new LinkedList<>(); RESULT.add(a); :}
                     ;
 
-instruction ::=  WRITE LPAREN string_expression:a RPAREN SEMICOLON                                                                          {: RESULT = new Print(a); :}/*
-              |  READ LPAREN IDENTIFIER:a RPAREN SEMICOLON                                                                                  {: RESULT = new Read(a.getLexeme); :}*/
-              |  INT IDENTIFIER:a SEMICOLON                                                                                                 {: RESULT = new Declaration(a.getLexeme(), Type.NUMBER); :}
-              |  STRING IDENTIFIER:a SEMICOLON                                                                                              {: RESULT = new Declaration(a.getLexeme(), Type.STRING); :}
-              |  FLOAT IDENTIFIER:a SEMICOLON                                                                                               {: RESULT = new Declaration(a.getLexeme(), Type.FLOAT); :}
-              |  CHARACTER IDENTIFIER:a SEMICOLON                                                                                           {: RESULT = new Declaration(a.getLexeme(), Type.CHARACTER); :}
-              |  BOOLEAN IDENTIFIER:a SEMICOLON                                                                                             {: RESULT = new Declaration(a.getLexeme(), Type.BOOLEAN;); :}
-              |  IDENTIFIER:a EQUALS values:b SEMICOLON                                                                                     {: RESULT = new Assignment(a.getLexeme(), b); :}
+instruction ::=  WRITE LPAREN STR_CONST:a RPAREN SEMICOLON                                                                                  {: RESULT = new Print(new Operation(a.getLexeme(), OperationType.STRING)); :}
+              |  READ LPAREN IDENTIFIER:a RPAREN SEMICOLON                                                                                  {: RESULT = new Read(a.getLexeme()); :}
+              |  declaration:a SEMICOLON                                                                                                    {: RESULT = a; :}
+              |  IDENTIFIER:a EQUALS value:b SEMICOLON                                                                                     {: RESULT = new Assignment(a.getLexeme(), b); :}
               |  IF LPAREN logical_expression:a RPAREN LBRACE instructions_list:b RBRACE                                                    {: RESULT = new If(a,b); :}
               |  IF LPAREN logical_expression:a RPAREN LBRACE instructions_list:b RBRACE ELSE LBRACE instructions_list:c RBRACE             {: RESULT = new If(a,b,c); :}
               |  IF LPAREN logical_expression:a RPAREN LBRACE instructions_list:b RBRACE else_ifs:c                                         {: RESULT = new If(a,b,c,null); :}
@@ -125,20 +126,52 @@ instruction ::=  WRITE LPAREN string_expression:a RPAREN SEMICOLON              
               |  IDENTIFIER:a INCREMENT SEMICOLON                                                                                             {: RESULT = new Increment(a.getLexeme()); :}
               |  IDENTIFIER:a DECREMENT SEMICOLON                                                                                             {: RESULT = new Decrement(a.getLexeme()); :}
               |  WHILE LPAREN logical_expression:a RPAREN LBRACE instructions_list:b RBRACE                                                 {: RESULT = new While(a, b); :}
-              |  FOR LPAREN INT_CONST:a COMMA INT_CONST:b RPAREN LBRACE instructions_list:c RBRACE                                          {: RESULT = new For(Integer.valueOf(String.valueOf(a)), Integer.valueOf(String.valueOf(b)), c); :}                
+              |  FOR LPAREN INT_CONST:a COMMA INT_CONST:b RPAREN LBRACE instructions_list:c RBRACE                                          {: RESULT = new For(Integer.valueOf(a.getLexeme()), Integer.valueOf(a.getLexeme()), c); :}                
               |  SWITCH LPAREN IDENTIFIER:a RPAREN LBRACE case_list:b RBRACE                                                               {: RESULT = new Switch(a, b); :}
+              |  function
               |  error
               ;
+
+declaration ::= var_type:a IDENTIFIER:i SEMICOLON                                                                                          {:
+                                                                                                                                                switch(a){
+                                                                                                                                                    case "cadena":
+                                                                                                                                                        RESULT = new Declaration(i.getLexeme(), Type.STRING);
+                                                                                                                                                    break;
+                                                                                                                                                    case "entero":
+                                                                                                                                                        RESULT = new Declaration(i.getLexeme(), Type.NUMBER);
+                                                                                                                                                    break;
+                                                                                                                                                    case "flotante":
+                                                                                                                                                        RESULT = new Declaration(i.getLexeme(), Type.FLOAT);
+                                                                                                                                                    break;
+                                                                                                                                                    case "caracter":
+                                                                                                                                                        RESULT = new Declaration(i.getLexeme(), Type.CHARACTER);
+                                                                                                                                                    break;
+                                                                                                                                                    case "booleano":
+                                                                                                                                                        RESULT = new Declaration(i.getLexeme(), Type.BOOLEAN);
+                                                                                                                                                    break;
+                                                                                                                                                    default:
+                                                                                                                                                        RESULT = new Declaration(i.getLexeme(), Type.INVALID);
+                                                                                                                                                    break;
+                                                                                                                                                }                            
+                                                                                                                                            :}
+            ;
+
+var_type ::=    INT:a               {: RESULT = a.getLexeme(); :}
+            |   STRING:a            {: RESULT = a.getLexeme(); :}
+            |   FLOAT:a             {: RESULT = a.getLexeme(); :}
+            |   CHARACTER:a         {: RESULT = a.getLexeme(); :}
+            |   BOOLEAN:a           {: RESULT = a.getLexeme(); :}
+            ;
 
 else_ifs ::= else_ifs:a ELSE LPAREN logical_expression:b RPAREN LBRACE instructions_list:c RBRACE       {: RESULT = a; RESULT.add(new If(b,c)); :}
            | ELSE IF LPAREN logical_expression:a RPAREN LBRACE instructions_list:b RBRACE               {: RESULT = new LinkedList<>(); RESULT.add(new If(a,b)); :}
            ;
 
-case_list ::= case_list:a CASE values:b COLON instructions_list:c BREAK SEMICOLON        {: RESULT = a; RESULT.add(new Case(b, c)); :}
-            | CASE values:a COLON instructions_list:b BREAK SEMICOLON                    {: RESULT = new LinkedList<>(); RESULT.add(new Case(a, b)); :}
+case_list ::= case_list:a CASE value:b COLON instructions_list:c BREAK SEMICOLON        {: RESULT = a; RESULT.add(new Case(b, c)); :}
+            | CASE value:a COLON instructions_list:b BREAK SEMICOLON                    {: RESULT = new LinkedList<>(); RESULT.add(new Case(a, b)); :}
             ;
 
-case_statement ::= CASE values:a COLON instructions_list:b BREAK SEMICOLON      {: RESULT = new Case(a, b); :}
+case_statement ::= CASE value:a COLON instructions_list:b BREAK SEMICOLON      {: RESULT = new Case(a, b); :}
                 |  DEFAULT COLON instructions_list:a BREAK SEMICOLON                   {: RESULT = new Case(a); :}
             ;
 
@@ -154,22 +187,28 @@ numerical_expresion ::=    numerical_expresion:a PLUS numerical_expresion:b     
                 |          IDENTIFIER:a                                                            {: RESULT = new Operation(a.getLexeme(), OperationType.IDENTIFIER); :}
                 ;
                     
-logical_expression ::=  /*expressions:a EQUALS EQUALS expressions:b                  {: RESULT = new Operation(a, b, Operation.OperationType.EQUALS_EQUALS); :}*/
+logical_expression ::=  value:a EQUALS EQUALS value:b                              {: RESULT = new Operation(a, b, OperationType.EQUALS_EQUALS); :}
                      |  numerical_expresion:a LT numerical_expresion:b             {: RESULT = new Operation(a, b, OperationType.LESS_THAN); :}
                      |  numerical_expresion:a GT numerical_expresion:b             {: RESULT = new Operation(a, b, OperationType.GREATHER_THAN); :}
                      |  numerical_expresion:a LT EQUALS numerical_expresion:b      {: RESULT = new Operation(a, b, OperationType.LESS_THAN_EQUALS); :}
                      |  numerical_expresion:a GT EQUALS numerical_expresion:b      {: RESULT = new Operation(a, b, OperationType.GREATHER_THAN_EQUALS); :}
                      ;        
 
-expressions ::= string_expression:a         {: RESULT = a; :}
-              | logical_expression:a        {: RESULT = a; :}
-              ;
-
-value ::= numerical_expresion       {: RESULT = a; :}
-        | STR_CONST                 {: RESULT = new Operation(a.getLexeme(), OperationType.STRING); :}
-        | boolean_value             {: RESULT = a; :}
+value ::= numerical_expresion:a       {: RESULT = a; :}
+        | STR_CONST:a                 {: RESULT = new Operation(a.getLexeme(), OperationType.STRING); :}
+        | boolean_value:a             {: RESULT = a; :}
         ;
 
-boolean_value ::=   TRUE            {: RESULT = new Operation(a.getLexeme(), OperationType.BOOLEAN); :}
-                |   FALSE           {: RESULT = new Operation(a.getLexeme(), OperationType.BOOLEAN); :}
+boolean_value ::=   TRUE:a            {: RESULT = new Operation(a.getLexeme(), OperationType.BOOLEAN); :}
+                |   FALSE:a           {: RESULT = new Operation(a.getLexeme(), OperationType.BOOLEAN); :}
                 ;
+
+function ::= VOID IDENTIFIER:a LPAREN RPAREN LBRACE instructions_list:i RBRACE                           {: RESULT = new FunctionDeclaration(a.getLexeme(), i);  :}
+          |  VOID IDENTIFIER:a LPAREN parameter_list:p RPAREN  LBRACE instructions_list:i RBRACE         {: RESULT = new FunctionDeclaration(a.getLexeme(), p, i); :}
+          |  FUNC var_type:a IDENTIFIER:n LPAREN RPAREN LBRACE instructions_list:i RBRACE                  {: RESULT = new FunctionDeclaration(a, n.getLexeme(), i); :}
+          |  FUNC var_type:a IDENTIFIER:n LPAREN parameter_list:p LBRACE instructions_list:i RBRACE        {: RESULT = new FunctionDeclaration(a, n.getLexeme(), p, i); :}  
+          ;
+
+parameter_list ::=  parameter_list:a declaration:b  {: RESULT = a; RESULT.add(b); :}
+                |   declaration:a                   {: RESULT = new LinkedList<>(); RESULT.add(a); :}
+                ; 

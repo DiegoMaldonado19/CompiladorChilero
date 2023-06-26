@@ -32,20 +32,25 @@ public class ParserSym {
   public static final int PLUS = 10;
   public static final int IF = 21;
   public static final int EXCLAMATION = 16;
+  public static final int BOOLEAN = 42;
   public static final int EOF = 0;
+  public static final int TRUE = 40;
   public static final int INT_CONST = 28;
   public static final int error = 1;
   public static final int BREAK = 39;
+  public static final int VOID = 43;
   public static final int SWITCH = 36;
   public static final int COLON = 4;
   public static final int LBRACE = 2;
   public static final int ELSE = 22;
+  public static final int FUNC = 44;
   public static final int READ = 25;
   public static final int WHILE = 24;
   public static final int DEFAULT = 38;
   public static final int FLOAT = 20;
   public static final int RBRACE = 3;
   public static final int STRING = 19;
+  public static final int FALSE = 41;
   public static final int GT = 15;
   public static final int IDENTIFIER = 27;
   public static final String[] terminalNames = new String[] {
@@ -88,7 +93,12 @@ public class ParserSym {
   "SWITCH",
   "CASE",
   "DEFAULT",
-  "BREAK"
+  "BREAK",
+  "TRUE",
+  "FALSE",
+  "BOOLEAN",
+  "VOID",
+  "FUNC"
   };
 }
 

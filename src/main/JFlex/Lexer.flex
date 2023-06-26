@@ -74,12 +74,14 @@ case = "caso"
 break = "break"
 true = "true"
 false = "false"
-boolean = "boolean"
+boolean = "booleano"
+void = "metodo"
+func = "funcion"
 
 /* Estados */
 %state STRING
 %state COMMENT
-$state CHARACTER
+%state CHARACTER
 
 %%
 
@@ -108,6 +110,10 @@ $state CHARACTER
     [\|\|]                        { return symbol(ParserSym.OR, yytext()); }
     {character}                   { return symbol(ParserSym.CHARACTER); }
     {boolean}                     { return symbol(ParserSym.BOOLEAN); }
+    {void}                        { return symbol(ParserSym.VOID); }
+    {func}                        { return symbol(ParserSym.FUNC); }
+    {true}                        { return symbol(ParserSym.TRUE); }
+    {false}                       { return symbol(ParserSym.FALSE); } 
     {int}                         { return symbol(ParserSym.INT, yytext()); }
     {string}                      { return symbol(ParserSym.STRING, yytext()); }
     {float}                       { return symbol(ParserSym.FLOAT, yytext()); }
