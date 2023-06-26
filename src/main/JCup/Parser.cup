@@ -80,6 +80,7 @@ terminal Token FALSE;
 terminal Token BOOLEAN;
 terminal Token VOID;
 terminal Token FUNC;
+terminal Token CONCAT;
 
 
 /* Declaracion de elementos no terminales */
@@ -97,8 +98,10 @@ non terminal Instruction function;
 non terminal String var_type;
 non terminal Instruction declaration;
 non terminal Operation value;
+non terminal Operation concat_expr;
 
 /* Declaracion de precedencia */
+precedence left CONCAT;
 precedence left PLUS, MINUS;
 precedence left DIV, MULT;
 precedence right UMINUS;
@@ -120,6 +123,7 @@ instruction ::=  WRITE LPAREN STR_CONST:a RPAREN SEMICOLON                      
               |  WRITE LPAREN FLOAT_CONST:a RPAREN SEMICOLON                                                                                {: RESULT = new Print(new Operation(a.getLexeme(), OperationType.FLOAT)); :}
               |  WRITE LPAREN CHARACTER_CONST:a RPAREN SEMICOLON                                                                            {: RESULT = new Print(new Operation(a.getLexeme(), OperationType.CHARACTER)); :}
               |  WRITE LPAREN IDENTIFIER:a RPAREN SEMICOLON                                                                                 {: RESULT = new Print(a.getLexeme(), new Operation(a.getLexeme(), OperationType.IDENTIFIER), OperationType.IDENTIFIER); :}
+              |  WRITE LPAREN concat_expr:a RPAREN SEMICOLON                                                                                {: RESULT = new Print(a); :}
               |  READ LPAREN IDENTIFIER:a RPAREN SEMICOLON                                                                                  {: RESULT = new Read(a.getLexeme()); :}
               |  declaration:a SEMICOLON                                                                                                    {: RESULT = a; :}
               |  IDENTIFIER:a EQUALS value:b SEMICOLON                                                                                     {: RESULT = new Assignment(a.getLexeme(), b); :}
@@ -215,4 +219,8 @@ function ::= VOID IDENTIFIER:a LPAREN RPAREN LBRACE instructions_list:i RBRACE  
 
 parameter_list ::=  parameter_list:a COMMA declaration:b  {: RESULT = a; RESULT.add(b); :}
                 |   declaration:a                   {: RESULT = new LinkedList<>(); RESULT.add(a); :}
-                ; 
+                ;
+
+concat_expr ::= concat_expr:a CONCAT concat_expr:b          {:RESULT = new Operation(a,b,OperationType.CONCAT);:}
+             |  value:a                                       {:RESULT = a;:}
+             ;

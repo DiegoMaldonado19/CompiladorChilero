@@ -108,6 +108,7 @@ func = "funcion"
     [\>]                          { return symbol(ParserSym.GT, yytext()); }    /*>=*/
     [\!]                          { return symbol(ParserSym.EXCLAMATION, yytext()); }
     [\|\|]                        { return symbol(ParserSym.OR, yytext()); }
+    [\&]                          { return symbol(ParserSym.CONCAT, yytext()); } 
     {character}                   { return symbol(ParserSym.CHARACTER); }
     {boolean}                     { return symbol(ParserSym.BOOLEAN); }
     {void}                        { return symbol(ParserSym.VOID); }

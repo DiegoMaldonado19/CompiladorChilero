@@ -11,6 +11,7 @@ public class ParserSym {
   public static final int CHARACTER_CONST = 34;
   public static final int INCREMENT = 31;
   public static final int MULT = 12;
+  public static final int CONCAT = 45;
   public static final int EQUALS = 9;
   public static final int UMINUS = 35;
   public static final int CASE = 37;
@@ -98,7 +99,8 @@ public class ParserSym {
   "FALSE",
   "BOOLEAN",
   "VOID",
-  "FUNC"
+  "FUNC",
+  "CONCAT"
   };
 }
 
