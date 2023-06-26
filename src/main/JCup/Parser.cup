@@ -116,6 +116,10 @@ instructions_list ::=   instructions_list:a instruction:b   {: RESULT = a; RESUL
                     ;
 
 instruction ::=  WRITE LPAREN STR_CONST:a RPAREN SEMICOLON                                                                                  {: RESULT = new Print(new Operation(a.getLexeme(), OperationType.STRING)); :}
+              |  WRITE LPAREN INT_CONST:a RPAREN SEMICOLON                                                                                  {: RESULT = new Print(new Operation(a.getLexeme(), OperationType.NUMBER)); :}
+              |  WRITE LPAREN FLOAT_CONST:a RPAREN SEMICOLON                                                                                {: RESULT = new Print(new Operation(a.getLexeme(), OperationType.FLOAT)); :}
+              |  WRITE LPAREN CHARACTER_CONST:a RPAREN SEMICOLON                                                                            {: RESULT = new Print(new Operation(a.getLexeme(), OperationType.CHARACTER)); :}
+              |  WRITE LPAREN IDENTIFIER:a RPAREN SEMICOLON                                                                                 {: RESULT = new Print(a.getLexeme(), new Operation(a.getLexeme(), OperationType.IDENTIFIER), OperationType.IDENTIFIER); :}
               |  READ LPAREN IDENTIFIER:a RPAREN SEMICOLON                                                                                  {: RESULT = new Read(a.getLexeme()); :}
               |  declaration:a SEMICOLON                                                                                                    {: RESULT = a; :}
               |  IDENTIFIER:a EQUALS value:b SEMICOLON                                                                                     {: RESULT = new Assignment(a.getLexeme(), b); :}
@@ -182,7 +186,7 @@ numerical_expresion ::=    numerical_expresion:a PLUS numerical_expresion:b     
                 |          MINUS  numerical_expresion:a                                            {: RESULT = new Operation(a, OperationType.NEGATIVE); :}%prec UMINUS
                 |          LPAREN  numerical_expresion:a RPAREN                                    {: RESULT = a; :} 
                 |          INT_CONST:a                                                             {: RESULT = new Operation(new Double(a.getLexeme())); :}
-                |          FLOAT_CONST:a                                                           {: RESULT = new Operation(new Double(a.getLexeme())); :}
+                |          FLOAT_CONST:a                                                           {: RESULT = new Operation(new Double(a.getLexeme()), OperationType.FLOAT); :}
                 |          CHARACTER_CONST:a                                                       {: RESULT = new Operation(a.getLexeme(), OperationType.CHARACTER); :}
                 |          IDENTIFIER:a                                                            {: RESULT = new Operation(a.getLexeme(), OperationType.IDENTIFIER); :}
                 ;

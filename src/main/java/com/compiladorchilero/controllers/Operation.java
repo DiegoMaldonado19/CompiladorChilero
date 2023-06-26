@@ -39,6 +39,15 @@ public class Operation implements Instruction {
         this.value = a;
         this.type = type.NUMBER;
     }
+    
+    public Operation(Double a, OperationType type){
+        this.value = a;
+        this.type = type.FLOAT;
+    }
+
+    public OperationType getType() {
+        return type;
+    }
 
     @Override
     public Object execute(SymbolTable ts, JTextArea areaText, MainFrame mainFrame) {
@@ -83,7 +92,10 @@ public class Operation implements Instruction {
             return op;
         } /* ======== OPERACIONES UNARIOS ======== */ else if (type == this.type.NUMBER) {
             return new Double(value.toString());
-        } else if (type == this.type.IDENTIFIER) {
+        } else if(type == this.type.FLOAT){
+            return new Double(value.toString());
+        }
+        else if (type == this.type.IDENTIFIER) {
             return ts.getValue(value.toString());
         } else if (type == this.type.STRING) {
             return value.toString();
