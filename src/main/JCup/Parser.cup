@@ -132,7 +132,7 @@ instruction ::=  WRITE LPAREN STR_CONST:a RPAREN SEMICOLON                      
               |  error
               ;
 
-declaration ::= var_type:a IDENTIFIER:i SEMICOLON                                                                                          {:
+declaration ::= var_type:a IDENTIFIER:i                                                                                                     {:
                                                                                                                                                 switch(a){
                                                                                                                                                     case "cadena":
                                                                                                                                                         RESULT = new Declaration(i.getLexeme(), Type.STRING);
@@ -209,6 +209,6 @@ function ::= VOID IDENTIFIER:a LPAREN RPAREN LBRACE instructions_list:i RBRACE  
           |  FUNC var_type:a IDENTIFIER:n LPAREN parameter_list:p LBRACE instructions_list:i RBRACE        {: RESULT = new FunctionDeclaration(a, n.getLexeme(), p, i); :}  
           ;
 
-parameter_list ::=  parameter_list:a declaration:b  {: RESULT = a; RESULT.add(b); :}
+parameter_list ::=  parameter_list:a COMMA declaration:b  {: RESULT = a; RESULT.add(b); :}
                 |   declaration:a                   {: RESULT = new LinkedList<>(); RESULT.add(a); :}
                 ; 
