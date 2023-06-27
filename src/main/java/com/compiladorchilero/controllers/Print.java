@@ -25,13 +25,14 @@ public class Print implements Instruction {
     public Print(String id, Operation content, OperationType type){
         this.id = id;
         this.type = type;
+        this.content = content;
     }
 
     @Override
     public Object execute(SymbolTable ts, JTextArea areaText, MainFrame mainFrame) {
         if (this.type == OperationType.IDENTIFIER) {
             for (Symbol sym : ts) {
-                if (sym.getId() == this.id) {
+                if (sym.getId().equals(id)) {
                     areaText.append(content.execute(ts, areaText, mainFrame) + "\n");
                 } else {
                     JOptionPane.showMessageDialog(mainFrame, "Variable no existe en este scope.");
