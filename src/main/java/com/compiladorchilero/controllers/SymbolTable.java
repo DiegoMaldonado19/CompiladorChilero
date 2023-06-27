@@ -4,16 +4,20 @@
  */
 package com.compiladorchilero.controllers;
 
+import com.compiladorchilero.views.MainFrame;
 import java.util.LinkedList;
+import javax.swing.JOptionPane;
 
 /**
  *
  * @author ACER
  */
 public class SymbolTable extends LinkedList<Symbol> {
+    private MainFrame mainFrame;
 
-    public SymbolTable() {
+    public SymbolTable(MainFrame mainFrame) {
         super();
+        this.mainFrame = mainFrame;
     }
 
     Object getValue(String id) {
@@ -22,7 +26,7 @@ public class SymbolTable extends LinkedList<Symbol> {
                 return s.getValue();
             }
         }
-        System.out.println("La variable " + id + " no existe en este ámbito.");
+        JOptionPane.showMessageDialog(mainFrame, "La variable " + id.toString() + " no existe en este ámbito.");
         return "Desconocido";
     }
 
@@ -33,7 +37,7 @@ public class SymbolTable extends LinkedList<Symbol> {
                 return;
             }
         }
-        System.out.println("La variable " + id + " no existe en este ámbito, por lo "
+        JOptionPane.showMessageDialog(mainFrame, "La variable " + id.toString() + " no existe en este ámbito, por lo "
                 + "que no puede asignársele un valor.");
     }
 }

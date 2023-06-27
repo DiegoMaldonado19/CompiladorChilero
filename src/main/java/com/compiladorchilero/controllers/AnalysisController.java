@@ -57,7 +57,7 @@ public class AnalysisController {
             JOptionPane.showMessageDialog(mainFrame, "No es posible ejecutar las instrucciones porque el árbol no fue cargado de forma adecuada por la existencia de errores léxicos o sintácticos.");
             return;
         }
-        SymbolTable ts=new SymbolTable();
+        SymbolTable ts=new SymbolTable(mainFrame);
 
         for(Instruction ins:ast){
             if(ins!=null)

@@ -77,6 +77,7 @@ false = "false"
 boolean = "booleano"
 void = "metodo"
 func = "funcion"
+default = "defecto"
 
 /* Estados */
 %state STRING
@@ -114,6 +115,7 @@ func = "funcion"
     {void}                        { return symbol(ParserSym.VOID); }
     {func}                        { return symbol(ParserSym.FUNC); }
     {true}                        { return symbol(ParserSym.TRUE); }
+    {default}                     { return symbol(ParserSym.DEFAULT); }  
     {false}                       { return symbol(ParserSym.FALSE); } 
     {int}                         { return symbol(ParserSym.INT, yytext()); }
     {string}                      { return symbol(ParserSym.STRING, yytext()); }

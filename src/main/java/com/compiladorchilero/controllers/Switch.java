@@ -14,20 +14,29 @@ import javax.swing.JTextArea;
  */
 public class Switch implements Instruction{
     private Object expression;
-    private LinkedList<Instruction> caseList;
+    private LinkedList<Case> caseList;
 
-    public Switch(Object expression, LinkedList<Instruction> caseList) {
+    public Switch(Object expression, LinkedList<Case> caseList) {
         this.expression = expression;
         this.caseList = caseList;
     }
     
     @Override
     public Object execute(SymbolTable ts, JTextArea areaText, MainFrame mainFrame) {
-        SymbolTable localTable = new SymbolTable();
+        boolean found = false;
+        SymbolTable localTable = new SymbolTable(mainFrame);
         localTable.addAll(ts);
-        for(Instruction in: caseList){
-            in.execute(localTable, areaText, mainFrame);
+        for(Case c: caseList){
+            if(c.getValue()!=null && c.getValue().equals(expression)){
+                c.execute(localTable, areaText, mainFrame);
+                found = true;
+            }
         }
+        
+        if(found == false){
+            caseList.getLast().execute(localTable, areaText, mainFrame);
+        }
+        
         return null;
     }
 }

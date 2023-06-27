@@ -40,7 +40,7 @@ public class If implements Instruction{
     @Override
     public Object execute(SymbolTable ts, JTextArea areaText, MainFrame mainFrame) {
         if ((Boolean) condition.execute(ts, areaText, mainFrame)) {
-            SymbolTable localTable = new SymbolTable();
+            SymbolTable localTable = new SymbolTable(mainFrame);
             localTable.addAll(ts);
             for (Instruction in : instructionList) {
                 in.execute(localTable, areaText, mainFrame);
@@ -57,7 +57,7 @@ public class If implements Instruction{
                 }
             }
             if (elseInstructionList != null && !bandera) {
-                SymbolTable localTable = new SymbolTable();
+                SymbolTable localTable = new SymbolTable(mainFrame);
                 localTable.addAll(ts);
                 for (Instruction in : elseInstructionList) {
                     in.execute(localTable, areaText, mainFrame);

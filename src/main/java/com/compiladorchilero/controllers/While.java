@@ -25,7 +25,7 @@ public class While implements Instruction{
     @Override
     public Object execute(SymbolTable ts, JTextArea areaText, MainFrame mainFrame) {
         while((Boolean)condition.execute(ts, areaText, mainFrame)){
-            SymbolTable localTable=new SymbolTable();
+            SymbolTable localTable=new SymbolTable(mainFrame);
             localTable.addAll(ts);
             for(Instruction ins:instructionList){
                 ins.execute(localTable, areaText, mainFrame);

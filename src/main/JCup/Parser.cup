@@ -88,9 +88,8 @@ non terminal file;
 non terminal LinkedList<Instruction> instructions_list;
 non terminal Instruction instruction;
 non terminal LinkedList<Instruction> else_ifs;
-non terminal LinkedList<Instruction> case_list;
+non terminal LinkedList<Case> case_list;
 non terminal LinkedList<Instruction> parameter_list;
-non terminal Instruction case_statement;
 non terminal Operation numerical_expresion;
 non terminal Operation logical_expression;
 non terminal Operation boolean_value;
@@ -175,12 +174,8 @@ else_ifs ::= else_ifs:a ELSE LPAREN logical_expression:b RPAREN LBRACE instructi
            | ELSE IF LPAREN logical_expression:a RPAREN LBRACE instructions_list:b RBRACE               {: RESULT = new LinkedList<>(); RESULT.add(new If(a,b)); :}
            ;
 
-case_list ::= case_list:a CASE value:b COLON instructions_list:c BREAK SEMICOLON        {: RESULT = a; RESULT.add(new Case(b, c)); :}
-            | CASE value:a COLON instructions_list:b BREAK SEMICOLON                    {: RESULT = new LinkedList<>(); RESULT.add(new Case(a, b)); :}
-            ;
-
-case_statement ::= CASE value:a COLON instructions_list:b BREAK SEMICOLON      {: RESULT = new Case(a, b); :}
-                |  DEFAULT COLON instructions_list:a BREAK SEMICOLON                   {: RESULT = new Case(a); :}
+case_list ::= case_list:a DEFAULT COLON instructions_list:b BREAK SEMICOLON       {: RESULT = a; RESULT.add(new Case(null, b)); :}
+            | CASE value:a COLON instructions_list:b BREAK SEMICOLON              {: RESULT = new LinkedList<>(); RESULT.add(new Case(a, b)); :}
             ;
 
 numerical_expresion ::=    numerical_expresion:a PLUS numerical_expresion:b                        {: RESULT = new Operation(a, b, OperationType.ADDITION); :}

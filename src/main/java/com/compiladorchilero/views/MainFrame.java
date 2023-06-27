@@ -5,6 +5,10 @@
 package com.compiladorchilero.views;
 
 import com.compiladorchilero.controllers.AnalysisController;
+import com.compiladorchilero.controllers.ArchiveReader;
+import java.io.File;
+import java.io.IOException;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 /**
@@ -12,8 +16,9 @@ import javax.swing.JOptionPane;
  * @author ACER
  */
 public class MainFrame extends javax.swing.JFrame {
-    
+
     private AnalysisController analysisController;
+    private ArchiveReader archiveReader;
 
     /**
      * Creates new form MainFrame
@@ -23,6 +28,7 @@ public class MainFrame extends javax.swing.JFrame {
         this.errorTextArea.setEditable(false);
         this.resultTextArea.setEditable(false);
         this.analysisController = new AnalysisController();
+        this.archiveReader = new ArchiveReader();
     }
 
     /**
@@ -169,7 +175,7 @@ public class MainFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void anaylzeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_anaylzeButtonActionPerformed
-        if(this.writingTextArea.getText().length() == 0){
+        if (this.writingTextArea.getText().length() == 0) {
             JOptionPane.showMessageDialog(this, "No puedes usar este boton si no hay texto que analizar");
         } else {
             this.analysisController.startAnalysis(this.writingTextArea, this.errorTextArea, this.resultTextArea, this);
@@ -189,7 +195,17 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_clearErrorLogTextAreaActionPerformed
 
     private void uploadFileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uploadFileButtonActionPerformed
-        // TODO add your handling code here:
+        JFileChooser fileChosser = new JFileChooser();
+        int selection = fileChosser.showOpenDialog(this);
+        this.writingTextArea.setText(" ");
+        if (selection == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChosser.getSelectedFile();
+            try {
+                this.archiveReader.readFile(selectedFile, this.writingTextArea);
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this, "Error al leer el archivo");
+            }
+        }
     }//GEN-LAST:event_uploadFileButtonActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

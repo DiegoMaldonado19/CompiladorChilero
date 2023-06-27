@@ -26,9 +26,17 @@ public class Case implements Instruction{
         this.instructionList = instructionList;
     }
 
+    public Operation getValue() {
+        return value;
+    }
+
+    public LinkedList<Instruction> getInstructionList() {
+        return instructionList;
+    }
+
     @Override
     public Object execute(SymbolTable ts, JTextArea areaText, MainFrame mainFrame) {
-       SymbolTable localTable = new SymbolTable();
+        SymbolTable localTable = new SymbolTable(mainFrame);
         localTable.addAll(ts);
         for(Instruction in: instructionList){
             in.execute(localTable, areaText, mainFrame);

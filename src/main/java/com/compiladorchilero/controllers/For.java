@@ -28,7 +28,7 @@ public class For implements Instruction{
         int beginTmp = Integer.valueOf(String.valueOf(begin));
         int endTmp = Integer.valueOf(String.valueOf(end));
         for(int i=beginTmp; i<=endTmp; i++){
-            SymbolTable localTable=new SymbolTable();
+            SymbolTable localTable=new SymbolTable(mainFrame);
             localTable.addAll(ts);
             for(Instruction ins:instructionList){
                 ins.execute(localTable, areaText, mainFrame);
