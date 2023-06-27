@@ -27,7 +27,7 @@ public class For implements Instruction{
     public Object execute(SymbolTable ts, JTextArea areaText, MainFrame mainFrame){
         int beginTmp = Integer.valueOf(String.valueOf(begin));
         int endTmp = Integer.valueOf(String.valueOf(end));
-        for(int i=beginTmp; i<endTmp; i++){
+        for(int i=beginTmp; i<=endTmp; i++){
             SymbolTable localTable=new SymbolTable();
             localTable.addAll(ts);
             for(Instruction ins:instructionList){

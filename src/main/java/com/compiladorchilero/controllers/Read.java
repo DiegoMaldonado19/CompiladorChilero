@@ -24,7 +24,7 @@ public class Read implements Instruction{
     public Object execute(SymbolTable ts, JTextArea textArea, MainFrame mainFrame) {
         String name = JOptionPane.showInputDialog("Ingrese el contenido solicitado en el Area de Texto");
         for(Symbol sym: ts){
-            if(sym.getId()==id){
+            if(sym.getId().equals(id)){
                if(name!=null){
                   ts.setValue(id, (Object)name);
                } else {

@@ -134,9 +134,9 @@ instruction ::=  WRITE LPAREN STR_CONST:a RPAREN SEMICOLON                      
               |  IDENTIFIER:a INCREMENT SEMICOLON                                                                                             {: RESULT = new Increment(a.getLexeme()); :}
               |  IDENTIFIER:a DECREMENT SEMICOLON                                                                                             {: RESULT = new Decrement(a.getLexeme()); :}
               |  WHILE LPAREN logical_expression:a RPAREN LBRACE instructions_list:b RBRACE                                                 {: RESULT = new While(a, b); :}
-              |  FOR LPAREN INT_CONST:a COMMA INT_CONST:b RPAREN LBRACE instructions_list:c RBRACE                                          {: RESULT = new For(Integer.valueOf(a.getLexeme()), Integer.valueOf(a.getLexeme()), c); :}                
+              |  FOR LPAREN INT_CONST:a COMMA INT_CONST:b RPAREN LBRACE instructions_list:c RBRACE                                          {: RESULT = new For(Integer.valueOf(a.getLexeme()), Integer.valueOf(b.getLexeme()), c); :}                
               |  SWITCH LPAREN IDENTIFIER:a RPAREN LBRACE case_list:b RBRACE                                                               {: RESULT = new Switch(a, b); :}
-              |  function
+              |  function:a                                                                                                                   {: RESULT = a; :}
               |  error
               ;
 
