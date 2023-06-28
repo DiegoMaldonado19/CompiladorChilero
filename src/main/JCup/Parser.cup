@@ -98,6 +98,7 @@ non terminal String var_type;
 non terminal Instruction declaration;
 non terminal Operation value;
 non terminal Operation concat_expr;
+non terminal callFunc_Paramlist;
 
 /* Declaracion de precedencia */
 precedence left CONCAT;
@@ -125,6 +126,8 @@ instruction ::=  WRITE LPAREN STR_CONST:a RPAREN SEMICOLON                      
               |  WRITE LPAREN concat_expr:a RPAREN SEMICOLON                                                                                {: RESULT = new Print(a); :}
               |  READ LPAREN IDENTIFIER:a RPAREN SEMICOLON                                                                                  {: RESULT = new Read(a.getLexeme()); :}
               |  declaration:a SEMICOLON                                                                                                    {: RESULT = a; :}
+              |  IDENTIFIER:a LPAREN callFunc_Paramlist RPAREN SEMICOLON                                                                      {: RESULT = new CallFunction(a.getLexeme()); :} 
+              |  IDENTIFIER:a LPAREN RPAREN SEMICOLON                                                                                         {: RESULT = new CallFunction(a.getLexeme()); :}      
               |  IDENTIFIER:a EQUALS value:b SEMICOLON                                                                                     {: RESULT = new Assignment(a.getLexeme(), b); :}
               |  IF LPAREN logical_expression:a RPAREN LBRACE instructions_list:b RBRACE                                                    {: RESULT = new If(a,b); :}
               |  IF LPAREN logical_expression:a RPAREN LBRACE instructions_list:b RBRACE ELSE LBRACE instructions_list:c RBRACE             {: RESULT = new If(a,b,c); :}
@@ -135,7 +138,7 @@ instruction ::=  WRITE LPAREN STR_CONST:a RPAREN SEMICOLON                      
               |  WHILE LPAREN logical_expression:a RPAREN LBRACE instructions_list:b RBRACE                                                 {: RESULT = new While(a, b); :}
               |  FOR LPAREN INT_CONST:a COMMA INT_CONST:b RPAREN LBRACE instructions_list:c RBRACE                                          {: RESULT = new For(Integer.valueOf(a.getLexeme()), Integer.valueOf(b.getLexeme()), c); :}                
               |  SWITCH LPAREN IDENTIFIER:a RPAREN LBRACE case_list:b RBRACE                                                               {: RESULT = new Switch(a, b); :}
-              |  function:a                                                                                                                   {: RESULT = a; :}
+              |  function:a                                                                                                                   {: RESULT = a; :}              
               |  error
               ;
 
@@ -219,3 +222,7 @@ parameter_list ::=  parameter_list:a COMMA declaration:b  {: RESULT = a; RESULT.
 concat_expr ::= concat_expr:a CONCAT concat_expr:b          {:RESULT = new Operation(a,b,OperationType.CONCAT);:}
              |  value:a                                       {:RESULT = a;:}
              ;
+
+callFunc_Paramlist ::= callFunc_Paramlist IDENTIFIER COMMA
+                    |  IDENTIFIER COMMA
+                    ;
