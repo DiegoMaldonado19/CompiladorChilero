@@ -99,7 +99,7 @@ public class Operation implements Instruction {
         } else if (type == this.type.STRING) {
             return value.toString();
         } else if (type == this.type.CHARACTER) {
-            return generateChar();
+            return value.toString();
         } /* ======== OPERACIONES RELACIONALES ======== */ else if (type == this.type.GREATHER_THAN) {
             try {
                 boolOp = ((Double) leftOperator.execute(ts, areaText, mainFrame)) > ((Double) rightOperator.execute(ts, areaText, mainFrame));
@@ -147,27 +147,6 @@ public class Operation implements Instruction {
             return String.valueOf(leftOperator.execute(ts, areaText, mainFrame)) + String.valueOf(rightOperator.execute(ts, areaText, mainFrame)); 
         } else {
             return null;
-        }
-    }
-
-    /**
-     * Metodo que obtiene un valor char del Token CARACTER
-     *
-     * @return un valor de tipo char obtenido de una cadena
-     */
-    private char generateChar() {
-        String cad = this.value.toString();
-        switch (cad) {
-            case "\\n":
-                return '\n';
-            case "\\'":
-                return '\'';
-            case "\\\"":
-                return '\"';
-            case "\\\\":
-                return '\\';
-            default:
-                return cad.isEmpty() ? '\0' : cad.charAt(0);
         }
     }
 }

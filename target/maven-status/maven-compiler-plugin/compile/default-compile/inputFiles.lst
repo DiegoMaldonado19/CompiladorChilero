@@ -1,7 +1,27 @@
-C:\Users\ACER\Desktop\Compiladores 1 Vaqueras Junio 2023\CompiladorChilero\src\main\java\com\compiladorchilero\views\MainFrame.java
-C:\Users\ACER\Desktop\Compiladores 1 Vaqueras Junio 2023\CompiladorChilero\src\main\java\com\compiladorchilero\analyzers\Parser.java
-C:\Users\ACER\Desktop\Compiladores 1 Vaqueras Junio 2023\CompiladorChilero\src\main\java\com\compiladorchilero\controllers\AnalysisController.java
-C:\Users\ACER\Desktop\Compiladores 1 Vaqueras Junio 2023\CompiladorChilero\src\main\java\com\compiladorchilero\models\Token.java
-C:\Users\ACER\Desktop\Compiladores 1 Vaqueras Junio 2023\CompiladorChilero\src\main\java\com\compiladorchilero\Main.java
-C:\Users\ACER\Desktop\Compiladores 1 Vaqueras Junio 2023\CompiladorChilero\src\main\java\com\compiladorchilero\analyzers\ParserSym.java
-C:\Users\ACER\Desktop\Compiladores 1 Vaqueras Junio 2023\CompiladorChilero\src\main\java\com\compiladorchilero\analyzers\Lexer.java
+C:\Users\CARIadmin\Desktop\CompiladorChilero\src\main\java\com\compiladorchilero\controllers\Assignment.java
+C:\Users\CARIadmin\Desktop\CompiladorChilero\src\main\java\com\compiladorchilero\controllers\Switch.java
+C:\Users\CARIadmin\Desktop\CompiladorChilero\src\main\java\com\compiladorchilero\controllers\OperationType.java
+C:\Users\CARIadmin\Desktop\CompiladorChilero\src\main\java\com\compiladorchilero\controllers\Operation.java
+C:\Users\CARIadmin\Desktop\CompiladorChilero\src\main\java\com\compiladorchilero\controllers\Decrement.java
+C:\Users\CARIadmin\Desktop\CompiladorChilero\src\main\java\com\compiladorchilero\controllers\CallFunction.java
+C:\Users\CARIadmin\Desktop\CompiladorChilero\src\main\java\com\compiladorchilero\controllers\SymbolTable.java
+C:\Users\CARIadmin\Desktop\CompiladorChilero\src\main\java\com\compiladorchilero\controllers\FunctionDeclaration.java
+C:\Users\CARIadmin\Desktop\CompiladorChilero\src\main\java\com\compiladorchilero\controllers\Case.java
+C:\Users\CARIadmin\Desktop\CompiladorChilero\src\main\java\com\compiladorchilero\analyzers\Parser.java
+C:\Users\CARIadmin\Desktop\CompiladorChilero\src\main\java\com\compiladorchilero\controllers\Print.java
+C:\Users\CARIadmin\Desktop\CompiladorChilero\src\main\java\com\compiladorchilero\controllers\ArchiveReader.java
+C:\Users\CARIadmin\Desktop\CompiladorChilero\src\main\java\com\compiladorchilero\controllers\Declaration.java
+C:\Users\CARIadmin\Desktop\CompiladorChilero\src\main\java\com\compiladorchilero\controllers\If.java
+C:\Users\CARIadmin\Desktop\CompiladorChilero\src\main\java\com\compiladorchilero\controllers\Instruction.java
+C:\Users\CARIadmin\Desktop\CompiladorChilero\src\main\java\com\compiladorchilero\models\Token.java
+C:\Users\CARIadmin\Desktop\CompiladorChilero\src\main\java\com\compiladorchilero\controllers\For.java
+C:\Users\CARIadmin\Desktop\CompiladorChilero\src\main\java\com\compiladorchilero\controllers\Read.java
+C:\Users\CARIadmin\Desktop\CompiladorChilero\src\main\java\com\compiladorchilero\analyzers\Lexer.java
+C:\Users\CARIadmin\Desktop\CompiladorChilero\src\main\java\com\compiladorchilero\views\MainFrame.java
+C:\Users\CARIadmin\Desktop\CompiladorChilero\src\main\java\com\compiladorchilero\controllers\Type.java
+C:\Users\CARIadmin\Desktop\CompiladorChilero\src\main\java\com\compiladorchilero\controllers\Symbol.java
+C:\Users\CARIadmin\Desktop\CompiladorChilero\src\main\java\com\compiladorchilero\controllers\Increment.java
+C:\Users\CARIadmin\Desktop\CompiladorChilero\src\main\java\com\compiladorchilero\Main.java
+C:\Users\CARIadmin\Desktop\CompiladorChilero\src\main\java\com\compiladorchilero\controllers\While.java
+C:\Users\CARIadmin\Desktop\CompiladorChilero\src\main\java\com\compiladorchilero\analyzers\ParserSym.java
+C:\Users\CARIadmin\Desktop\CompiladorChilero\src\main\java\com\compiladorchilero\controllers\AnalysisController.java
