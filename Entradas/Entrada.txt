@@ -1,0 +1,55 @@
+Escribir("Tablas de" & " multiplicar");
+
+entero n1;
+
+n1=0;
+
+entero n2;
+
+n2=1;
+Escribir("----------------");
+mientras(n1<4+n2){	
+	n1++;
+	entero n3;
+	n3=0;
+	mientras(n3<4+n2){
+		n3++;
+		Escribir(n1 & " * " & n3 & " = " & n1 * n3);
+	}
+	Escribir("----------------");
+}
+
+n1=11;
+
+entero n3;
+
+n3=12;
+n2=13;
+
+si(n1>10){
+	Escribir(n1 & " es mayor que 10.");
+	si(n3>11){
+		Escribir(n1 & " es mayor que 10 y " & n3 & " es mayor que 11.");
+		si(n2>12){
+			Escribir(n1 & " es mayor que 10, " & n3 & " es mayor que 11 y " & n2 & " es mayor que 12.");
+		}
+	}
+}sino{
+	Escribir(n1 & " es menor o igual que 10.");
+}
+
+
+n1 = 0;
+n3 = 10;
+
+mientras(n1 < 10){
+	Escribir("incrementando variable n1: " & n1);
+	n1++;
+}
+
+Escribir("----------------");
+
+mientras(n3 > 0){
+	Escribir("decrementando variable n3: " & n3);
+	n3--;
+}
